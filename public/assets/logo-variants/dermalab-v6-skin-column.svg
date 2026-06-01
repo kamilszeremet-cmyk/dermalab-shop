@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title">
+  <title id="title">DermaLab drop aperture</title>
+  <g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 21c11 12 19 23 19 35 0 12.4-8.2 21-19 21s-19-8.6-19-21c0-12 8-23 19-35Z"/>
+    <path d="M39 56h22"/>
+    <path d="M50 45v22" stroke="#2f6f5d"/>
+  </g>
+</svg>

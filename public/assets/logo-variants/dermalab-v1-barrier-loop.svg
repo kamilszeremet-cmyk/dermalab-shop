@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title">
+  <title id="title">DermaLab precision D</title>
+  <g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M29 24h19c15 0 25 10.7 25 26S63 76 48 76H29V24Z"/>
+    <path d="M50 35v30" stroke="#2f6f5d"/>
+    <path d="M39 50h22" stroke="#2f6f5d"/>
+  </g>
+</svg>

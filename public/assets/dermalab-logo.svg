@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="224" height="52" viewBox="0 0 224 52" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">DermaLab</title>
+  <g fill="none" stroke="#14241d" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11.5 9.5h14.8c11.7 0 19.8 7.1 19.8 16.5s-8.1 16.5-19.8 16.5H11.5v-33Z"/>
+    <path d="M28.5 16.5v19" stroke="#2f6f5d"/>
+    <path d="M21.5 26h14" stroke="#2f6f5d"/>
+  </g>
+  <text x="62" y="33" fill="#14241d" font-family="Bahnschrift, 'Aptos Display', Aptos, sans-serif" font-size="24" font-weight="700">DermaLab</text>
+</svg>

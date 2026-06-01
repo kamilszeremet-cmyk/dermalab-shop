@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title">
+  <title id="title">DermaLab capsule D</title>
+  <g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M28 24h25c12.7 0 22 11.3 22 26s-9.3 26-22 26H28"/>
+    <path d="M28 24v52"/>
+    <path d="M43 37v26" stroke="#2f6f5d"/>
+    <path d="M56 37v26" stroke="#2f6f5d"/>
+  </g>
+</svg>

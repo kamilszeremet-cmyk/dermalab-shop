@@ -1,0 +1,30 @@
+{
+  "name": "dermalab-dropshipping-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "set ESBUILD_BINARY_PATH=node_modules\\@esbuild\\win32-x64\\esbuild.exe&& C:\\Progra~1\\nodejs\\node.exe ./node_modules/vite/bin/vite.js --host 127.0.0.1",
+    "build": "C:\\Progra~1\\nodejs\\node.exe ./node_modules/typescript/bin/tsc --noEmit && set ESBUILD_BINARY_PATH=node_modules\\@esbuild\\win32-x64\\esbuild.exe&& C:\\Progra~1\\nodejs\\node.exe ./node_modules/vite/bin/vite.js build",
+    "preview": "set ESBUILD_BINARY_PATH=node_modules\\@esbuild\\win32-x64\\esbuild.exe&& C:\\Progra~1\\nodejs\\node.exe ./node_modules/vite/bin/vite.js preview --host 127.0.0.1",
+    "test": "set ESBUILD_BINARY_PATH=node_modules\\@esbuild\\win32-x64\\esbuild.exe&& C:\\Progra~1\\nodejs\\node.exe ./node_modules/vitest/vitest.mjs run",
+    "test:watch": "set ESBUILD_BINARY_PATH=node_modules\\@esbuild\\win32-x64\\esbuild.exe&& C:\\Progra~1\\nodejs\\node.exe ./node_modules/vitest/vitest.mjs"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.6.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "jsdom": "^25.0.0",
+    "typescript": "^5.8.0",
+    "vite": "^7.0.0",
+    "vitest": "^3.0.0"
+  }
+}

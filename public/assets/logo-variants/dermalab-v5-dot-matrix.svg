@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title">
+  <title id="title">DermaLab measured matrix</title>
+  <g fill="currentColor">
+    <circle cx="32" cy="32" r="4"/>
+    <circle cx="50" cy="30" r="4"/>
+    <circle cx="66" cy="36" r="4"/>
+    <circle cx="72" cy="52" r="4"/>
+    <circle cx="64" cy="68" r="4"/>
+    <circle cx="46" cy="70" r="4"/>
+    <circle cx="30" cy="62" r="4"/>
+    <circle cx="26" cy="46" r="4"/>
+  </g>
+  <path d="M42 43h14c5.2 0 8.8 3 8.8 7s-3.6 7-8.8 7H42V43Z" fill="none" stroke="#2f6f5d" stroke-width="4" stroke-linejoin="round"/>
+</svg>
