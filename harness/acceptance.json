@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "budget": { "maxRepairRounds": 3 },
+  "checks": [
+    {"id":"A1","area":"build","must":"npm run test, npm run build działają na Linux; wszystkie testy zielone"},
+    {"id":"A2","area":"browse","must":"/ ładuje się bez błędów w konsoli; katalog pokazuje produkty; filtr Problem zawęża listę; filtr bez wyników pokazuje komunikat"},
+    {"id":"A3","area":"product","must":"klik w produkt w katalogu pokazuje jego szczegóły (nazwa w nagłówku detalu = kliknięty produkt) i przewija do nich"},
+    {"id":"A4","area":"cart","must":"Dodaj -> licznik w nagłówku +1, koszyk otwarty; zmiana ilości przelicza sumę; przycisk Usuń usuwa pozycję; pusty koszyk = komunikat i zablokowany checkout"},
+    {"id":"A5","area":"shipping","must":"subtotal >=179 zł pokazuje darmową dostawę, <179 nie; suma = produkty + dostawa z dokładnością do grosza"},
+    {"id":"A6","area":"persistence","must":"koszyk i wybór cookies przetrwają reload"},
+    {"id":"A7","area":"checkout","must":"klik płatności wysyła POST z lineItems (unitAmount w groszach), shippingOption i totalAmount zgodnym z UI; przekierowanie na url z odpowiedzi"},
+    {"id":"A8","area":"checkout-error","must":"odpowiedź 500 z endpointu -> komunikat błędu po polsku, przycisk znów klikalny, brak przekierowania"},
+    {"id":"A9","area":"return","must":"/checkout/sukces pokazuje potwierdzenie i czyści koszyk; /checkout/anulowane pokazuje info i koszyk zostaje"},
+    {"id":"A10","area":"customer-view","must":"bez ?admin=1 nie widać: raportu importu/hurtowni, panelu SEO produktu, tekstów typu 'Endpoint checkoutu', 'demo feed', statusów konfiguracji; z ?admin=1 są widoczne"},
+    {"id":"A11","area":"mobile","must":"przy 390x844 brak poziomego scrolla (scrollWidth<=clientWidth), koszyk da się otworzyć, zmienić ilość i zamknąć"},
+    {"id":"A12","area":"a11y-basic","must":"obrazy produktów mają alt z nazwą produktu; przyciski mają dostępne nazwy; koszyk zamyka się Escape"}
+  ]
+}
