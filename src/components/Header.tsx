@@ -3,12 +3,13 @@ import { ShoppingBag } from "lucide-react";
 interface HeaderProps {
   cartCount: number;
   onCartOpen: () => void;
+  admin?: boolean;
 }
 
-export function Header({ cartCount, onCartOpen }: HeaderProps) {
+export function Header({ cartCount, onCartOpen, admin = false }: HeaderProps) {
   return (
     <header className="site-header">
-      <a className="brand" href="#home" aria-label="DermaLab home">
+      <a className="brand" href="/" aria-label="DermaLab home">
         <svg
           className="brand-logo-svg"
           viewBox="0 0 224 52"
@@ -27,9 +28,9 @@ export function Header({ cartCount, onCartOpen }: HeaderProps) {
       </a>
       <nav aria-label="Główna nawigacja">
         <a href="#catalog">Katalog</a>
-        <a href="#seo">SEO</a>
+        <a href="#seo">Zestawy</a>
         <a href="#routine">Rutyny</a>
-        <a href="#import">Hurtownia</a>
+        {admin && <a href="#import">Hurtownia</a>}
         <a href="#dokumenty">Regulamin</a>
       </nav>
       <button className="icon-button" type="button" onClick={onCartOpen} aria-label="Otwórz koszyk">

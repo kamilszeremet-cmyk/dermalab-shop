@@ -4,14 +4,15 @@ interface ProductDetailProps {
   product: StoreProduct | null;
   recommendations: StoreProduct[];
   onAddToCart: (product: StoreProduct) => void;
+  admin?: boolean;
 }
 
-export function ProductDetail({ product, recommendations, onAddToCart }: ProductDetailProps) {
+export function ProductDetail({ product, recommendations, onAddToCart, admin = false }: ProductDetailProps) {
   if (!product) return null;
 
   return (
-    <section className="section product-detail">
-      <img src={product.images[0]} alt="" />
+    <section className="section product-detail" id="product-detail" aria-label="Szczegóły produktu">
+      <img src={product.images[0]} alt={product.name} />
       <div>
         <p className="section-label">{product.category}</p>
         <h2>{product.name}</h2>
@@ -27,6 +28,7 @@ export function ProductDetail({ product, recommendations, onAddToCart }: Product
         <button type="button" onClick={() => onAddToCart(product)}>
           Dodaj do koszyka - {product.retailPrice.toFixed(2)} zł
         </button>
+        {admin && (
         <div className="seo-panel">
           <h3>SEO produktu</h3>
           <p>
@@ -39,6 +41,7 @@ export function ProductDetail({ product, recommendations, onAddToCart }: Product
             <strong>URL:</strong> {product.seo.canonicalPath}
           </p>
         </div>
+        )}
       </div>
       <aside className="recommendations" id="routine">
         <h3>Uzupełnij rutynę</h3>
@@ -49,7 +52,7 @@ export function ProductDetail({ product, recommendations, onAddToCart }: Product
           </button>
         ))}
         <div className="faq-list">
-          <h3>FAQ SEO</h3>
+          <h3>Najczęstsze pytania</h3>
           {product.seo.faq.map((item) => (
             <details key={item.question}>
               <summary>{item.question}</summary>

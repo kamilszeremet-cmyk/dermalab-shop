@@ -5,8 +5,8 @@ interface FooterProps {
 }
 
 export function Footer({ config }: FooterProps) {
-  const seller = config.legalName || `${config.storeName} - dane firmy do uzupelnienia`;
-  const email = config.email || "kontakt do uzupelnienia";
+  const seller = config.legalName || config.storeName;
+  const email = config.email;
 
   return (
     <footer className="site-footer">
@@ -15,7 +15,7 @@ export function Footer({ config }: FooterProps) {
           {config.storeName}
         </a>
         <p>{seller}</p>
-        <p>{email}</p>
+        {email && <p>{email}</p>}
       </div>
       <nav aria-label="Dokumenty sklepu">
         <a href={config.termsUrl}>Regulamin</a>

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { calculateCartTotals } from "../domain/cart";
 import { createCheckoutRequest, getCheckoutReadiness, getShippingOptions, type CheckoutPayload } from "../domain/checkout";
+import { resolveShippingOption } from "../domain/shipping";
 import type { CartLine, StoreProduct } from "../domain/product";
 
 interface CartDrawerProps {
@@ -10,6 +11,8 @@ interface CartDrawerProps {
   checkoutEndpoint: string;
   onClose: () => void;
   onQuantityChange: (productId: string, quantity: number) => void;
+  onRemove: (productId: string) => void;
+  admin?: boolean;
   onBeginCheckout?: (payload: CheckoutPayload) => void;
   onPurchaseHandoff?: (payload: CheckoutPayload) => void;
 }
@@ -21,14 +24,17 @@ export function CartDrawer({
   checkoutEndpoint,
   onClose,
   onQuantityChange,
+  onRemove,
+  admin = false,
   onBeginCheckout,
   onPurchaseHandoff,
 }: CartDrawerProps) {
   const [statusMessage, setStatusMessage] = useState("");
-  const [shippingId, setShippingId] = useState("inpost_locker");
+  const [shippingId, setShippingId] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const totals = calculateCartTotals(cart, products);
   const shippingOptions = getShippingOptions(totals.subtotal);
-  const shippingOption = shippingOptions.find((option) => option.id === shippingId) ?? shippingOptions[0];
+  const shippingOption = resolveShippingOption(shippingOptions, shippingId);
   const orderTotal = totals.subtotal + shippingOption.price;
   const checkout = createCheckoutRequest(cart, products, {
     endpoint: checkoutEndpoint,
@@ -38,18 +44,32 @@ export function CartDrawer({
   });
   const readiness = getCheckoutReadiness(checkoutEndpoint);
 
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
   async function handleCheckout() {
+    if (pending) return;
+    setStatusMessage("");
     if (!checkout.ok || !checkout.payload) {
       setStatusMessage(checkout.message);
       return;
     }
 
     if (readiness.status !== "ready") {
-      setStatusMessage(readiness.message);
+      setStatusMessage(
+        admin ? readiness.message : "Płatności są chwilowo niedostępne. Spróbuj ponownie później.",
+      );
       return;
     }
 
     onBeginCheckout?.(checkout.payload);
+    setPending(true);
 
     try {
       const response = await fetch(checkout.payload.endpoint, {
@@ -57,15 +77,17 @@ export function CartDrawer({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(checkout.payload),
       });
-      const data = (await response.json()) as { url?: string; error?: string };
+      const data = (await response.json().catch(() => ({}))) as { url?: string; error?: string };
       if (!response.ok || !data.url) {
-        setStatusMessage(data.error ?? "Nie udało się utworzyć sesji płatności.");
+        setStatusMessage("Nie udało się rozpocząć płatności. Spróbuj ponownie za chwilę.");
+        setPending(false);
         return;
       }
       onPurchaseHandoff?.(checkout.payload);
       window.location.assign(data.url);
     } catch {
-      setStatusMessage("Endpoint checkoutu nie odpowiedział. Sprawdź backend płatności.");
+      setStatusMessage("Nie udało się połączyć z płatnościami. Spróbuj ponownie za chwilę.");
+      setPending(false);
     }
   }
 
@@ -92,6 +114,7 @@ export function CartDrawer({
                   <strong>{product.name}</strong>
                   <span>{product.retailPrice.toFixed(2)} zł</span>
                 </div>
+                <div className="cart-line-controls">
                 <input
                   aria-label={`Ilość: ${product.name}`}
                   min={0}
@@ -99,6 +122,10 @@ export function CartDrawer({
                   value={line.quantity}
                   onChange={(event) => onQuantityChange(product.id, Number(event.currentTarget.value))}
                 />
+                <button type="button" onClick={() => onRemove(product.id)} aria-label={`Usuń: ${product.name}`}>
+                  Usuń
+                </button>
+                </div>
               </div>
             );
           })
@@ -120,16 +147,16 @@ export function CartDrawer({
           </p>
           <strong>Suma: {orderTotal.toFixed(2)} zł</strong>
           <p>{checkout.message}</p>
-          <p>Endpoint checkoutu: {checkoutEndpoint ? "skonfigurowany" : "brak"}</p>
-          <p>{readiness.message}</p>
-          {checkout.issues.map((issue) => (
-            <p className="error" key={issue}>
+          {admin && <p>Endpoint checkoutu: {checkoutEndpoint ? "skonfigurowany" : "brak"}</p>}
+          {admin && <p>{readiness.message}</p>}
+          {cart.length > 0 && checkout.issues.map((issue) => (
+            <p className="error" key={issue} role="alert">
               {issue}
             </p>
           ))}
-          {statusMessage && <p className="error">{statusMessage}</p>}
-          <button type="button" disabled={!checkout.ok} onClick={handleCheckout}>
-            Przejdź do Stripe Checkout + P24
+          {statusMessage && <p className="error" role="alert">{statusMessage}</p>}
+          <button type="button" disabled={!checkout.ok || pending} aria-busy={pending} onClick={handleCheckout}>
+            {pending ? "Przekierowuję do płatności…" : "Przejdź do płatności"}
           </button>
         </div>
       </aside>

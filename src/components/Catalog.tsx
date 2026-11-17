@@ -65,14 +65,26 @@ export function Catalog({
           </label>
         </aside>
         <div className="product-grid">
+          {products.length === 0 && (
+            <div className="empty-state" role="status">
+              <p>Brak produktów dla wybranych filtrów.</p>
+              <button type="button" onClick={() => onFiltersChange({ ...filters, concern: "all", skinType: "all", ingredient: "all", category: "all", maxPrice: null, onlyAvailable: true })}>
+                Wyczyść filtry
+              </button>
+            </div>
+          )}
           {products.map((product) => (
             <article className="product-card" key={product.id}>
               <button type="button" className="image-button" onClick={() => onProductSelect(product)}>
-                <img src={product.images[0]} alt="" />
+                <img src={product.images[0]} alt={product.name} />
               </button>
               <div>
                 <p className="product-brand">{product.brand}</p>
-                <h3>{product.name}</h3>
+                <h3>
+                  <button type="button" className="link-button" onClick={() => onProductSelect(product)}>
+                    {product.name}
+                  </button>
+                </h3>
                 <p>{product.shortBenefit}</p>
               </div>
               <div className="product-actions">
