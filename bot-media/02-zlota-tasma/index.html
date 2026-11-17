@@ -1,0 +1,301 @@
+<title>Złota Taśma</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* layout: amber-phosphor trading terminal — header strip, chart + delta tape, decision bar, result, session log */
+:root{
+  --bg:#110b02; --panel:#1b1204; --line:#4a3410; --fg:#ffd48a; --dim:#b08a4c;
+  --amber:#ffb000; --bull:#3fe0b5; --bear:#ff5b4a; --asia:#2a1d07; --fvg:rgba(63,224,181,.16);
+  --disp:"Big Shoulders Display", Impact, "Arial Narrow", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "Courier New", monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--fg)}
+[hidden]{display:none!important}
+body{font-family:var(--mono);font-size:14px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 28px;
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px)}
+.wrap{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px}
+h1{font-family:var(--disp);font-weight:800;font-size:clamp(34px,9vw,54px);line-height:.9;margin:0;color:var(--amber);letter-spacing:.5px;text-transform:uppercase;text-shadow:0 0 18px rgba(255,176,0,.35)}
+.sub{color:var(--dim);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.kpis{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.kpi{display:flex;flex-direction:column;align-items:flex-end}
+.kpi b{font-size:10px;color:var(--dim);font-weight:400;letter-spacing:.1em;text-transform:uppercase}
+.kpi span{font-family:var(--disp);font-size:28px;line-height:1}
+.chartbox{border:1px solid var(--line);background:#0c0801;position:relative}
+canvas{display:block;width:100%;height:clamp(330px,62vw,440px)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.info{min-width:0;flex:1 1 260px;font-size:13px;color:var(--dim)}
+.info strong{color:var(--fg);font-weight:600}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button{font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+  background:transparent;color:var(--fg);border:1px solid var(--line);padding:10px 16px;min-height:44px}
+button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+button:disabled{opacity:.35;cursor:not-allowed}
+button.long{border-color:var(--bull);color:var(--bull)}
+button.short{border-color:var(--bear);color:var(--bear)}
+button.long:hover:not(:disabled){background:rgba(63,224,181,.12)}
+button.short:hover:not(:disabled){background:rgba(255,91,74,.12)}
+button.main{background:var(--amber);color:var(--bg);border-color:var(--amber)}
+button.ghost{font-size:11px;padding:6px 10px;min-height:32px;color:var(--dim)}
+.result{border:1px solid var(--line);background:var(--panel);padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.result h2{font-family:var(--disp);font-size:26px;margin:0;line-height:1;text-transform:uppercase;letter-spacing:.5px}
+.result p{margin:0;max-width:68ch}
+.pos{color:var(--bull)}.neg{color:var(--bear)}.zero{color:var(--dim)}
+.log{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+.log div{display:grid;grid-template-columns:2.5em minmax(0,1fr) 4.5em 1.5em;gap:8px}
+.log span:nth-child(3){text-align:right}
+.foot{font-size:11px;color:var(--dim);border-top:1px solid var(--line);padding-top:8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--dim)}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.overlay{position:fixed;inset:0;background:rgba(17,11,2,.95);display:flex;align-items:center;justify-content:center;z-index:20;overflow:auto;
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.card{max-width:560px;width:100%;border:1px solid var(--amber);background:var(--panel);padding:20px;display:flex;flex-direction:column;gap:12px}
+.card p{margin:0}
+.card ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.big{font-family:var(--disp);font-size:56px;line-height:1}
+.grid2{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-variant-numeric:tabular-nums}
+.grid2 span:nth-child(even){text-align:right}
+</style>
+
+<div class="wrap">
+  <header>
+    <div><h1>Złota Taśma</h1><div class="sub">XAU/USD · 15 min · sesja Londyn · symulacja</div></div>
+    <div class="kpis">
+      <div class="kpi"><b>Runda</b><span id="kRound">1/10</span></div>
+      <div class="kpi"><b>Wynik</b><span id="kR">0,0R</span></div>
+      <div class="kpi"><b>Dyscyplina</b><span id="kDisc">0/0</span></div>
+    </div>
+  </header>
+
+  <div class="chartbox"><canvas id="cv" aria-label="Wykres świecowy z deltą"></canvas></div>
+  <div class="legend">
+    <span><i style="background:var(--asia);outline:1px solid var(--line)"></i>Zakres Azji (AH/AL)</span>
+    <span><i style="background:var(--bull)"></i>Delta kupujący</span>
+    <span><i style="background:var(--bear)"></i>Delta sprzedający</span>
+    <button class="ghost" id="hintBtn" type="button">Podpowiedzi: off</button>
+  </div>
+
+  <div class="bar" id="decide">
+    <div class="info" id="info"></div>
+    <div class="btns">
+      <button class="long" id="bL" type="button">Long</button>
+      <button class="short" id="bS" type="button">Short</button>
+      <button id="bP" type="button">Pass</button>
+    </div>
+  </div>
+
+  <div class="result" id="result" hidden></div>
+
+  <div>
+    <div class="sub" style="margin-bottom:4px">Dziennik sesji</div>
+    <div class="log" id="log"></div>
+  </div>
+  <p class="foot">Symulacja do ćwiczenia czytania struktury (sweep płynności, wypieranie, FVG) i delty. Ceny generowane losowo, nie są kursem rynkowym. To nie jest rada inwestycyjna.</p>
+</div>
+
+<div class="overlay" id="ov"></div>
+
+<script>
+(()=>{
+const rnd=Math.random;
+const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+const $=id=>document.getElementById(id);
+const fmtR=r=>(r>0?'+':r<0?'−':'')+Math.abs(r).toFixed(1).replace('.',',')+'R';
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const ROUNDS=10, LON=28;
+
+const NAMES={A:'Sweep Asia Low + wypieranie',B:'Sweep Asia High + wypieranie',C:'Pułapka po sweepie dołka',D:'Pułapka po sweepie szczytu',E:'Chop w zakresie Azji'};
+const WHY={
+ A:'Cena zebrała płynność pod Asia Low i od razu wróciła do zakresu. Potem wypieranie w górę: duży korpus, mocna dodatnia delta i luka FVG. Powrót do FVG to podręcznikowe wejście w long, cel to płynność nad Asia High.',
+ B:'Cena wyjęła stopy nad Asia High i spadła z powrotem. Wypieranie w dół z mocną ujemną deltą zostawiło FVG. Powrót do luki to wejście w short, cel to płynność pod Asia Low.',
+ C:'Dołek zebrany, ale odbicie było bez wypierania: małe korpusy, brak FVG, a delta ujemna mimo rosnącej ceny. Ktoś sprzedawał w odbicie (absorpcja). Long tutaj to wejście w pułapkę. Model: pass albo short.',
+ D:'Szczyt zebrany, ale spadek był bez wypierania: drobne świece, brak FVG, delta dodatnia mimo spadku ceny. Kupujący absorbowali sprzedaż. Short to pułapka. Model: pass albo long.',
+ E:'Londyn kręci się w środku zakresu Azji. Nie było sweepu ani wypierania, więc nie ma przewagi. Najlepszy ruch to pass.'};
+
+let G=null, S=null, shown=0, anim=null, hints=false;
+try{hints=localStorage.getItem('zt-hints')==='1'}catch(e){}
+
+function gen(){
+ const base=Math.round(2400+rnd()*1800), a=base*0.0011;
+ const cs=[];let p=base;
+ const push=(o,c,h,l,d)=>{cs.push({o,c,h:Math.max(h,o,c),l:Math.min(l,o,c),d:Math.round(d)});p=c;};
+ const step=(target,n,vol,dBias=0,dMul=1)=>{for(let i=0;i<n;i++){const rem=n-i,o=p,c=o+(target-o)/rem+gauss()*vol*a;
+   push(o,c,Math.max(o,c)+Math.abs(gauss())*vol*a*.6,Math.min(o,c)-Math.abs(gauss())*vol*a*.6,((c-o)/a)*260*dMul+gauss()*110+dBias);}};
+ // Azja 00:00–06:00
+ const R=a*(3+rnd()*2);
+ for(let k=0;k<4;k++)step(base+(k%2?-1:1)*R*(.35+rnd()*.2),6,.5);
+ let AH=-Infinity,AL=Infinity;for(const c of cs){AH=Math.max(AH,c.h);AL=Math.min(AL,c.l);}
+ step((AH+AL)/2+gauss()*a,4,.4); // 06:00–07:00
+ const type=(()=>{const x=rnd();return x<.25?'A':x<.5?'B':x<.65?'C':x<.8?'D':'E'})();
+ let fvg=null,sweepIdx=null;
+ const s=(type==='A'||type==='C')?1:(type==='B'||type==='D')?-1:0;
+ if(s){
+  const lvl=s>0?AL:AH;
+  step(lvl+s*.5*a,3,.5);
+  // sweep
+  {const o=p,ext=lvl-s*(1.1+rnd()*.6)*a,c=lvl+s*.3*a;sweepIdx=cs.length;
+   push(o,c,s>0?Math.max(o,c)+.2*a:ext,s>0?ext:Math.min(o,c)-.2*a,-s*220+gauss()*80);}
+  if(type==='A'||type==='B'){
+   const mk=(mv,far,near,d)=>{const o=p,c=o+s*mv*a;const e1=c+s*far*a,e2=o-s*near*a;push(o,c,Math.max(e1,e2),Math.min(e1,e2),s*d+gauss()*90);return cs[cs.length-1];};
+   const c1=mk(.9,.15,.2,350),c2=mk(3.8+rnd()*1.2,.2,.1,1150),c3=mk(.9,.3,.4,520);
+   const lo=s>0?c1.h:c3.h,hi=s>0?c3.l:c1.l;fvg={lo,hi,i0:cs.length-3,i1:cs.length-1};
+   step(p+s*.6*a,2,.35,s*150);
+   const mid=(lo+hi)/2;step(mid,6,.3,-s*50,.5);
+   const L=cs[cs.length-1];L.c=mid+gauss()*.1*a;L.h=Math.max(L.h,L.o,L.c);L.l=Math.min(L.l,L.o,L.c);p=L.c;
+  }else{
+   step(lvl+s*1.7*a,7,.28,-s*190,-.5);
+  }
+ }else{
+  step(AH-(.8+rnd()*.6)*a,4,.5);step(AL+(.8+rnd()*.6)*a,4,.5);step((AH+AL)/2+gauss()*a,3,.5);
+ }
+ const dec=cs.length-1,entry=p;
+ let lo=Infinity,hi=-Infinity;for(let i=LON;i<=dec;i++){lo=Math.min(lo,cs[i].l);hi=Math.max(hi,cs[i].h);}
+ const riskL=Math.max(entry-(lo-.5*a),1.5*a),riskS=Math.max(hi+.5*a-entry,1.5*a);
+ const truth={A:1,B:-1,C:-1,D:1,E:0}[type];
+ if(truth){
+  const win=rnd()<((type==='A'||type==='B')?.68:.62),risk=truth>0?riskL:riskS,stop=entry-truth*risk;
+  if(win){step(entry+truth*2.6*risk,12,.45,truth*120);step(p-truth*.3*risk,12,.55);}
+  else{step(stop-truth*a,9,.45,-truth*100);step(p-truth*.4*risk,15,.55);}
+ }else{step(entry+gauss()*riskS*.6,12,.6);step(entry+gauss()*riskL*.6,12,.6);}
+ return{cs,a,AH,AL,type,fvg,sweepIdx,dec,entry,riskL,riskS,truth,base};
+}
+
+function rFor(g,dir){
+ if(!dir)return 0;const risk=dir>0?g.riskL:g.riskS,stop=g.entry-dir*risk,tp=g.entry+dir*2*risk;
+ for(let i=g.dec+1;i<g.cs.length;i++){const c=g.cs[i];
+  if(dir>0){if(c.l<=stop)return -1;if(c.h>=tp)return 2;}else{if(c.h>=stop)return -1;if(c.l<=tp)return 2;}}
+ const last=g.cs[g.cs.length-1].c;return Math.round((last-g.entry)*dir/risk*10)/10;
+}
+const disciplined=(g,dir)=>({A:dir===1,B:dir===-1,C:dir!==1,D:dir!==-1,E:dir===0})[g.type];
+const modelDir=g=>({A:1,B:-1,C:0,D:0,E:0})[g.type];
+
+/* ---- rysowanie ---- */
+const cv=$('cv'),ctx=cv.getContext('2d');
+function draw(){
+ if(!G)return;
+ const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+ if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);}
+ ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+ const C={amber:css('--amber'),bull:css('--bull'),bear:css('--bear'),line:css('--line'),dim:css('--dim'),fg:css('--fg'),asia:css('--asia'),fvg:css('--fvg')};
+ const padR=58,padT=10,axisH=18,dH=Math.round(H*.2),pH=H-padT-dH-axisH-10;
+ const n=G.cs.length,vis=G.cs.slice(0,shown),cw=(W-padR-6)/n;
+ let lo=Infinity,hi=-Infinity;for(const c of vis){lo=Math.min(lo,c.l);hi=Math.max(hi,c.h);}
+ const lv=S.levels;if(lv){for(const v of lv.list){lo=Math.min(lo,v);hi=Math.max(hi,v);}}
+ const pad=(hi-lo)*.06;lo-=pad;hi+=pad;
+ const y=v=>padT+(hi-v)/(hi-lo)*pH, x=i=>3+i*cw+cw/2;
+ ctx.font='11px "IBM Plex Mono", monospace';ctx.textBaseline='middle';
+ // siatka cen
+ const stepP=niceStep((hi-lo)/5);ctx.strokeStyle=C.line;ctx.lineWidth=1;ctx.fillStyle=C.dim;ctx.globalAlpha=.5;
+ for(let v=Math.ceil(lo/stepP)*stepP;v<hi;v+=stepP){ctx.beginPath();ctx.moveTo(0,y(v)+.5);ctx.lineTo(W-padR,y(v)+.5);ctx.stroke();}
+ ctx.globalAlpha=1;for(let v=Math.ceil(lo/stepP)*stepP;v<hi;v+=stepP)ctx.fillText(v.toFixed(stepP<1?1:0),W-padR+6,y(v));
+ // Azja
+ ctx.fillStyle=C.asia;ctx.fillRect(x(0)-cw/2,y(G.AH),24*cw,y(G.AL)-y(G.AH));
+ ctx.setLineDash([4,4]);ctx.strokeStyle=C.dim;
+ for(const [v,t] of [[G.AH,'AH'],[G.AL,'AL']]){ctx.beginPath();ctx.moveTo(x(0)-cw/2,y(v)+.5);ctx.lineTo(W-padR,y(v)+.5);ctx.stroke();ctx.fillStyle=C.dim;ctx.fillText(t,x(0),y(v)+(t==='AH'?-8:8));}
+ ctx.setLineDash([]);
+ // otwarcie Londynu
+ ctx.strokeStyle=C.amber;ctx.globalAlpha=.6;ctx.beginPath();ctx.moveTo(x(LON)-cw/2+.5,padT);ctx.lineTo(x(LON)-cw/2+.5,H-axisH);ctx.stroke();ctx.globalAlpha=1;
+ ctx.fillStyle=C.amber;ctx.fillText('LO 07:00',x(LON)-cw/2+4,padT+6);
+ // podpowiedzi
+ if(hints&&G.fvg&&shown>G.fvg.i1){ctx.fillStyle=C.fvg;ctx.fillRect(x(G.fvg.i0)-cw/2,y(G.fvg.hi),(n-G.fvg.i0)*cw-padR*0,y(G.fvg.lo)-y(G.fvg.hi));ctx.fillStyle=C.bull;ctx.fillText('FVG',x(G.fvg.i1)+cw,y((G.fvg.hi+G.fvg.lo)/2));}
+ if(hints&&G.sweepIdx!=null&&shown>G.sweepIdx){const c=G.cs[G.sweepIdx],up=G.type==='B'||G.type==='D';ctx.fillStyle=C.amber;ctx.textAlign='center';ctx.fillText(up?'▼ sweep':'▲ sweep',x(G.sweepIdx),up?y(c.h)-10:y(c.l)+10);ctx.textAlign='left';}
+ // świece
+ for(let i=0;i<vis.length;i++){const c=vis[i],up=c.c>=c.o,cx=x(i),bw=Math.max(1,cw*.62);
+  ctx.strokeStyle=C.amber;ctx.fillStyle=C.amber;ctx.beginPath();ctx.moveTo(cx+.5,y(c.h));ctx.lineTo(cx+.5,y(c.l));ctx.stroke();
+  const top=y(Math.max(c.o,c.c)),bh=Math.max(1,Math.abs(y(c.o)-y(c.c)));
+  if(up){ctx.fillStyle='#0c0801';ctx.fillRect(cx-bw/2,top,bw,bh);ctx.strokeRect(cx-bw/2+.5,top+.5,bw-1,bh-1);}else ctx.fillRect(cx-bw/2,top,bw,bh);}
+ // poziomy
+ if(lv){for(const [v,col,t] of lv.lines){ctx.strokeStyle=col;ctx.setLineDash(t==='WEJŚCIE'?[]:[6,3]);ctx.beginPath();ctx.moveTo(x(G.dec)-cw/2,y(v)+.5);ctx.lineTo(W-padR,y(v)+.5);ctx.stroke();
+   ctx.fillStyle=col;ctx.fillText(t,x(G.dec)+2,y(v)-7);}ctx.setLineDash([]);}
+ // decyzja
+ ctx.strokeStyle=C.fg;ctx.globalAlpha=.35;ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(x(G.dec)+cw/2,padT);ctx.lineTo(x(G.dec)+cw/2,H-axisH);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+ // delta
+ const d0=padT+pH+10,dMid=d0+dH/2;let dm=1;for(const c of G.cs)dm=Math.max(dm,Math.abs(c.d));
+ ctx.strokeStyle=C.line;ctx.beginPath();ctx.moveTo(0,dMid+.5);ctx.lineTo(W-padR,dMid+.5);ctx.stroke();
+ ctx.fillStyle=C.dim;ctx.fillText('Δ',W-padR+6,dMid);
+ for(let i=0;i<vis.length;i++){const d=vis[i].d,h=d/dm*(dH/2-2);ctx.fillStyle=d>=0?C.bull:C.bear;ctx.fillRect(x(i)-Math.max(1,cw*.31),d>=0?dMid-h:dMid,Math.max(1,cw*.62),Math.abs(h));}
+ // oś czasu
+ ctx.fillStyle=C.dim;ctx.textAlign='center';
+ for(let i=8;i<n;i+=8){const m=i*15;ctx.fillText(String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),x(i),H-axisH/2);}
+ ctx.textAlign='left';
+}
+function niceStep(r){const p=Math.pow(10,Math.floor(Math.log10(r)));const f=r/p;return (f<1.5?1:f<3?2:f<7?5:10)*p;}
+const tm=i=>{const m=(i+1)*15;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+const px=v=>v.toFixed(2);
+
+/* ---- przebieg ---- */
+function newSession(){S={round:0,total:0,disc:0,model:0,hist:[],levels:null,phase:'decide'};$('ov').hidden=true;nextRound();}
+function nextRound(){
+ S.round++;S.levels=null;S.phase='decide';G=gen();shown=G.dec+1;
+ $('result').hidden=true;$('decide').hidden=false;
+ ['bL','bS','bP'].forEach(id=>$(id).disabled=false);
+ $('info').innerHTML=`<strong>${tm(G.dec)} Londyn</strong> · cena <strong>${px(G.entry)}</strong><br>Long: SL ${px(G.entry-G.riskL)} · TP ${px(G.entry+2*G.riskL)}<br>Short: SL ${px(G.entry+G.riskS)} · TP ${px(G.entry-2*G.riskS)}`;
+ kpis();draw();
+}
+function choose(dir){
+ if(S.phase!=='decide')return;S.phase='reveal';['bL','bS','bP'].forEach(id=>$(id).disabled=true);
+ const lines=[[G.entry,css('--fg'),'WEJŚCIE']];
+ if(dir){const risk=dir>0?G.riskL:G.riskS;lines.push([G.entry-dir*risk,css('--bear'),'SL −1R'],[G.entry+dir*2*risk,css('--bull'),'TP +2R']);}
+ S.levels={lines,list:lines.map(l=>l[0])};
+ const r=rFor(G,dir),ok=disciplined(G,dir),mr=rFor(G,modelDir(G));
+ S.total+=r;S.model+=mr;if(ok)S.disc++;
+ S.hist.unshift({n:S.round,type:G.type,dir,r,ok});
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const finish=()=>{shown=G.cs.length;draw();showResult(dir,r,ok,mr);};
+ if(reduce){finish();return;}
+ clearInterval(anim);anim=setInterval(()=>{shown++;draw();if(shown>=G.cs.length){clearInterval(anim);finish();}},70);
+}
+function showResult(dir,r,ok,mr){
+ kpis();const name=dir>0?'Long':dir<0?'Short':'Pass';const cls=r>0?'pos':r<0?'neg':'zero';
+ const mtxt={A:'LONG',B:'SHORT',C:'PASS albo SHORT',D:'PASS albo LONG',E:'PASS'}[G.type];
+ $('decide').hidden=true;const el=$('result');el.hidden=false;
+ el.innerHTML=`<h2><span class="${cls}">${name} ${fmtR(r)}</span> · ${NAMES[G.type]}</h2>
+  <p><strong>Model:</strong> ${mtxt}${modelDir(G)?' ('+fmtR(mr)+' w tej rundzie)':''}. ${ok?'Twoja decyzja zgodna z modelem.':'Twoja decyzja niezgodna z modelem.'}${ok&&r<0?' Strata przy dobrej decyzji to koszt robienia biznesu.':''}${!ok&&r>0?' Zysk przy złej decyzji to szczęście, nie przewaga.':''}</p>
+  <p>${WHY[G.type]}</p>
+  <div><button class="main" id="nextBtn" type="button">${S.round>=ROUNDS?'Podsumowanie':'Następna runda'}</button></div>`;
+ $('nextBtn').onclick=()=>S.round>=ROUNDS?showEnd():nextRound();$('nextBtn').focus({preventScroll:true});
+ el.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function kpis(){
+ $('kRound').textContent=Math.min(S.round,ROUNDS)+'/'+ROUNDS;
+ const k=$('kR');k.textContent=fmtR(Math.round(S.total*10)/10);k.className=S.total>0?'pos':S.total<0?'neg':'';
+ $('kDisc').textContent=S.disc+'/'+S.hist.length;
+ $('log').innerHTML=S.hist.length?S.hist.map(h=>`<div><span>#${h.n}</span><span>${NAMES[h.type]} · ${h.dir>0?'long':h.dir<0?'short':'pass'}</span><span class="${h.r>0?'pos':h.r<0?'neg':'zero'}">${fmtR(h.r)}</span><span>${h.ok?'✓':'✗'}</span></div>`).join(''):'<div><span></span><span>Pusto. Pierwsza decyzja przed tobą.</span></div>';
+}
+function rank(t,d){if(d>=9)return t>0?'Czytasz taśmę, nie zgadujesz.':'Dobre decyzje, zły tydzień. Rynek tak ma.';
+ if(d>=6)return 'Widać plan. Widać też momenty, kiedy go nie było.';return t>0?'Wynik na plusie, dyscyplina na minusie. To się kiedyś odwróci.':'Sesja do przemyślenia. Najlepiej przy herbacie, nie przy wykresie.';}
+function showEnd(){
+ let best=null;try{best=localStorage.getItem('zt-best');if(best===null||S.total>+best){localStorage.setItem('zt-best',S.total);}}catch(e){}
+ const ov=$('ov');ov.hidden=false;const t=Math.round(S.total*10)/10;
+ ov.innerHTML=`<div class="card"><div class="sub">Koniec sesji · ${ROUNDS} rund</div>
+  <div class="big ${t>0?'pos':t<0?'neg':'zero'}">${fmtR(t)}</div><p>${rank(t,S.disc)}</p>
+  <div class="grid2"><span>Zgodność z modelem</span><span>${S.disc}/${ROUNDS}</span><span>Wynik samego modelu</span><span>${fmtR(Math.round(S.model*10)/10)}</span>
+  <span>Poprzedni rekord</span><span>${best!==null?fmtR(Math.round(+best*10)/10):'—'}</span></div>
+  <button class="main" id="again" type="button">Nowa sesja</button></div>`;
+ $('again').onclick=newSession;
+}
+function showIntro(){
+ const ov=$('ov');ov.hidden=false;
+ ov.innerHTML=`<div class="card"><div class="sub">XAU/USD · 15 min · symulacja</div><h1>Złota Taśma</h1>
+  <p>Dziesięć porannych sesji Londynu. Wykres zatrzymuje się w momencie decyzji. Wybierasz long, short albo pass, a potem taśma leci dalej.</p>
+  <ul><li>Szare pole to zakres Azji. AH i AL to płynność, na którą poluje Londyn.</li>
+  <li>Patrz na sweep, wypieranie i lukę FVG. Pod wykresem delta: kto naprawdę był agresywny.</li>
+  <li>SL za ekstremum sesji, TP = 2R. Liczy się wynik w R i zgodność z modelem, bo szczęście to nie strategia.</li></ul>
+  <button class="main" id="go" type="button">Otwórz taśmę</button></div>`;
+ $('go').onclick=newSession;
+}
+$('bL').onclick=()=>choose(1);$('bS').onclick=()=>choose(-1);$('bP').onclick=()=>choose(0);
+const hb=$('hintBtn');const setH=()=>{hb.textContent='Podpowiedzi: '+(hints?'on':'off');};setH();
+hb.onclick=()=>{hints=!hints;setH();try{localStorage.setItem('zt-hints',hints?'1':'0')}catch(e){}draw();};
+document.addEventListener('keydown',e=>{if(!S||$('ov').hidden===false)return;if(e.key==='l')choose(1);if(e.key==='s')choose(-1);if(e.key==='p')choose(0);});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(draw,80);});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+// tło pod intro: przykładowa runda
+S={round:0,total:0,disc:0,model:0,hist:[],levels:null,phase:'idle'};G=gen();shown=G.dec+1;kpis();draw();
+['bL','bS','bP'].forEach(id=>$(id).disabled=true);$('info').textContent='Kliknij „Otwórz taśmę”, żeby zacząć.';
+showIntro();
+})();
+</script>
