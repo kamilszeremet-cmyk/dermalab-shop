@@ -22,3 +22,10 @@ Admin: dodaj `?admin=1`.
 - Teksty dokumentów prawnych (regulamin itd.) nadal zawierają frazy "do uzupełnienia"/"szkic" (poza zakresem: treści prawne).
 - Produkcyjny `npm run build` nie ma endpointu bez ustawienia VITE_CHECKOUT_ENDPOINT (klient zobaczy "Płatności chwilowo niedostępne").
 - Brak testu E2E w prawdziwej przeglądarce poza ręcznym sprawdzeniem overflow 390px (OK).
+
+## Runda 1 - naprawy po QA (builder, repair round 1)
+- A11: szuflada koszyka = flex column, 100dvh; lista pozycji przewijana wewnątrz (`.cart-lines`), box płatności przypięty na dole; body bez scrolla gdy koszyk otwarty; baner cookies ukryty przy otwartym koszyku; mobilne menu (przycisk Menu, `aria-expanded`) poniżej 820px. Playwright: 4 produkty, przycisk płatności widoczny w 390x844 (y 767-807) i 1366x768 (y 691-731).
+- A4: pole ilości z lokalnym draftem (puste/niepoprawne nie usuwa linii), commit na blur/Enter, tylko liczby całkowite (floor), 0 przy commit usuwa, max = stock (`parseQuantityDraft`, `updateQuantity(..., max)`). Pusty koszyk: bez dostawy i sumy.
+- A10: `landing.subtitle` to teraz tekst dla klienta; stare notatki w `internalNote` (tylko admin).
+- Low: aria-label "Dodaj do koszyka: <nazwa>"; koszyk `role=dialog` + `aria-modal`, fokus do szuflady i powrót, klik w tło zamyka; linki header/footer na /checkout/* prowadzą do `/#...`; chipy hero przewijają do katalogu; /checkout/sukces czyści koszyk tylko z `session_id`, inaczej neutralny komunikat; stopka bez duplikatu nazwy.
+- Testy: 60 (vitest), tsc i build przechodzą.

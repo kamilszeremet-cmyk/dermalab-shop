@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveView } from "./route";
+import { anchorHref, hasCheckoutSessionId, resolveView } from "./route";
 import { isAdminMode } from "./adminMode";
 
 describe("resolveView", () => {
@@ -18,5 +18,15 @@ describe("isAdminMode", () => {
     expect(isAdminMode("?a=b&admin=1")).toBe(true);
     expect(isAdminMode("")).toBe(false);
     expect(isAdminMode("?admin=0")).toBe(false);
+  });
+});
+
+describe("checkout return helpers", () => {
+  it("detects session_id and prefixes anchors", () => {
+    expect(hasCheckoutSessionId("?session_id=cs_1")).toBe(true);
+    expect(hasCheckoutSessionId("")).toBe(false);
+    expect(hasCheckoutSessionId("?session_id=")).toBe(false);
+    expect(anchorHref("#catalog", "/")).toBe("/#catalog");
+    expect(anchorHref("https://x.pl/t", "/")).toBe("https://x.pl/t");
   });
 });

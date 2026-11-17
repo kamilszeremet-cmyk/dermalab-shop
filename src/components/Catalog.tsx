@@ -89,7 +89,7 @@ export function Catalog({
               </div>
               <div className="product-actions">
                 <strong>{product.retailPrice.toFixed(2)} zł</strong>
-                <button type="button" onClick={() => onAddToCart(product)}>
+                <button type="button" aria-label={`Dodaj do koszyka: ${product.name}`} onClick={() => onAddToCart(product)}>
                   Dodaj
                 </button>
               </div>

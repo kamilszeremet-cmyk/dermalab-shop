@@ -15,7 +15,7 @@ import { demoSupplierFeed } from "./data/demoSupplierFeed";
 import { readAdminMode } from "./domain/adminMode";
 import { addToCart, removeFromCart, updateQuantity } from "./domain/cart";
 import { clearStoredCart, getBrowserCartStorage, loadCart, saveCart } from "./domain/cartStorage";
-import { readView } from "./domain/route";
+import { readHasCheckoutSessionId, readView } from "./domain/route";
 import { filterProducts, recommendRoutineProducts, uniqueTags, uniqueValues } from "./domain/catalog";
 import { getSupplierFeedStatus, readSupplierFeedConfig } from "./domain/feedConfig";
 import { importSupplierRows } from "./domain/importer";
@@ -52,6 +52,8 @@ const defaultFilters: ProductFilters = {
 export default function App({ admin: adminProp }: { admin?: boolean } = {}) {
   const admin = useMemo(() => adminProp ?? readAdminMode(), [adminProp]);
   const view = useMemo(() => readView(), []);
+  const orderConfirmed = view === "checkout_success" && readHasCheckoutSessionId();
+  const anchorPrefix = view === "store" ? "" : "/";
   const importReport = useMemo(() => importSupplierRows(demoSupplierFeed), []);
   const supplierReadiness = useMemo(() => getSupplierReadiness(icoSupplierProfile), []);
   const feedConfig = useMemo(() => readSupplierFeedConfig(), []);
@@ -70,7 +72,7 @@ export default function App({ admin: adminProp }: { admin?: boolean } = {}) {
   const [filters, setFilters] = useState<ProductFilters>(defaultFilters);
   const [selectedProduct, setSelectedProduct] = useState<StoreProduct | null>(products[0] ?? null);
   const [cart, setCart] = useState<CartLine[]>(() => {
-    if (readView() === "checkout_success") return [];
+    if (readView() === "checkout_success" && readHasCheckoutSessionId()) return [];
     return loadCart(getBrowserCartStorage(), products.map((product) => product.id));
   });
   const [cartOpen, setCartOpen] = useState(false);
@@ -79,13 +81,13 @@ export default function App({ admin: adminProp }: { admin?: boolean } = {}) {
   const recommendations = selectedProduct ? recommendRoutineProducts(selectedProduct, products) : [];
 
   useEffect(() => {
-    if (view === "checkout_success") clearStoredCart(getBrowserCartStorage());
-  }, [view]);
+    if (orderConfirmed) clearStoredCart(getBrowserCartStorage());
+  }, [orderConfirmed]);
 
   useEffect(() => {
-    if (view === "checkout_success") return;
+    if (orderConfirmed) return;
     saveCart(getBrowserCartStorage(), cart);
-  }, [cart, view]);
+  }, [cart, orderConfirmed]);
 
   function handleProductSelect(product: StoreProduct) {
     setSelectedProduct(product);
@@ -114,10 +116,20 @@ export default function App({ admin: adminProp }: { admin?: boolean } = {}) {
       <TrackingScripts config={consentedTrackingConfig} />
       <Header
         admin={admin}
+        anchorPrefix={anchorPrefix}
         cartCount={cart.reduce((sum, line) => sum + line.quantity, 0)}
         onCartOpen={() => setCartOpen(true)}
       />
-      {view === "checkout_success" && (
+      {view === "checkout_success" && !orderConfirmed && (
+        <section className="checkout-return" aria-label="Zamówienie">
+          <h1>Zamówienie</h1>
+          <p>Nie znaleźliśmy potwierdzenia płatności dla tego adresu. Jeśli płatność została zakończona, potwierdzenie dotrze na Twój e-mail.</p>
+          <a className="button-link" href="/">
+            Wróć do sklepu
+          </a>
+        </section>
+      )}
+      {orderConfirmed && (
         <section className="checkout-return" aria-label="Potwierdzenie zamówienia">
           <h1>Dziękujemy za zamówienie!</h1>
           <p>Płatność została przyjęta. Potwierdzenie zamówienia wyślemy na adres e-mail podany w trakcie płatności.</p>
@@ -140,7 +152,12 @@ export default function App({ admin: adminProp }: { admin?: boolean } = {}) {
       )}
       {view === "store" && (
         <>
-      <HomePage onConcernSelect={(concern) => setFilters({ ...defaultFilters, concern })} />
+      <HomePage
+        onConcernSelect={(concern) => {
+          setFilters({ ...defaultFilters, concern });
+          setTimeout(() => document.getElementById("catalog")?.scrollIntoView?.({ behavior: "smooth", block: "start" }), 0);
+        }}
+      />
       <LandingPages
         admin={admin}
         pages={landingPages}
@@ -179,8 +196,8 @@ export default function App({ admin: adminProp }: { admin?: boolean } = {}) {
       <LegalDocuments admin={admin} documents={legalDocuments} />
         </>
       )}
-      <Footer config={storeConfig} />
-      <CookieConsentBanner consent={cookieConsent} onChoose={handleCookieChoice} />
+      <Footer config={storeConfig} anchorPrefix={anchorPrefix} />
+      <CookieConsentBanner consent={cookieConsent} onChoose={handleCookieChoice} hidden={cartOpen} />
       <CartDrawer
         open={cartOpen}
         cart={cart}
@@ -189,7 +206,11 @@ export default function App({ admin: adminProp }: { admin?: boolean } = {}) {
         admin={admin}
         onClose={() => setCartOpen(false)}
         onRemove={(productId) => setCart((current) => removeFromCart(current, productId))}
-        onQuantityChange={(productId, quantity) => setCart((current) => updateQuantity(current, productId, quantity))}
+        onQuantityChange={(productId, quantity) =>
+          setCart((current) =>
+            updateQuantity(current, productId, quantity, products.find((item) => item.id === productId)?.stock),
+          )
+        }
         onBeginCheckout={(payload) =>
           trackEvent(
             consentedTrackingConfig,

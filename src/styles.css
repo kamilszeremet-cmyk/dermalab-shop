@@ -281,6 +281,17 @@ button {
 
 .product-actions,
 .cart-header,
+.cart-lines {
+  flex: 1 1 auto;
+  min-height: 80px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.cart-header {
+  flex: none;
+}
+
 .cart-line {
   display: flex;
   align-items: center;
@@ -563,11 +574,15 @@ button {
 
 .cart-drawer {
   width: min(430px, 100%);
-  min-height: 100%;
-  display: grid;
-  align-content: start;
-  gap: 18px;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   padding: 22px;
+  outline: none;
+  overflow: hidden;
   background: #ffffff;
   box-shadow: -2px 0 8px rgba(22, 42, 36, 0.1);
 }
@@ -587,6 +602,9 @@ button {
 }
 
 .checkout-box {
+  flex: none;
+  max-height: 55%;
+  overflow-y: auto;
   display: grid;
   gap: 10px;
   padding: 14px;
@@ -634,6 +652,28 @@ button {
 
   .site-header nav {
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px clamp(20px, 5vw, 72px) 14px;
+    background: #f6f8f5;
+    border-bottom: 1px solid #d7ded8;
+  }
+
+  .site-header nav.open {
+    display: flex;
+  }
+
+  .site-header nav a {
+    padding: 12px 0;
+  }
+
+  .site-header .nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
   }
 
   .hero {
@@ -740,4 +780,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.nav-toggle {
+  display: none;
 }

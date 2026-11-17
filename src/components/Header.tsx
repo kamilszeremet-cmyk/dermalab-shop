@@ -1,12 +1,17 @@
-import { ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { Menu, ShoppingBag, X } from "lucide-react";
+import { anchorHref } from "../domain/route";
 
 interface HeaderProps {
   cartCount: number;
   onCartOpen: () => void;
   admin?: boolean;
+  anchorPrefix?: string;
 }
 
-export function Header({ cartCount, onCartOpen, admin = false }: HeaderProps) {
+export function Header({ cartCount, onCartOpen, admin = false, anchorPrefix = "" }: HeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const link = (href: string) => anchorHref(href, anchorPrefix);
   return (
     <header className="site-header">
       <a className="brand" href="/" aria-label="DermaLab home">
@@ -26,13 +31,23 @@ export function Header({ cartCount, onCartOpen, admin = false }: HeaderProps) {
           <text x="62" y="33">DermaLab</text>
         </svg>
       </a>
-      <nav aria-label="Główna nawigacja">
-        <a href="#catalog">Katalog</a>
-        <a href="#seo">Zestawy</a>
-        <a href="#routine">Rutyny</a>
-        {admin && <a href="#import">Hurtownia</a>}
-        <a href="#dokumenty">Regulamin</a>
+      <nav id="main-nav" aria-label="Główna nawigacja" className={menuOpen ? "open" : undefined} onClick={() => setMenuOpen(false)}>
+        <a href={link("#catalog")}>Katalog</a>
+        <a href={link("#seo")}>Zestawy</a>
+        <a href={link("#routine")}>Rutyny</a>
+        {admin && <a href={link("#import")}>Hurtownia</a>}
+        <a href={link("#dokumenty")}>Regulamin</a>
       </nav>
+      <button
+        className="icon-button nav-toggle"
+        type="button"
+        aria-expanded={menuOpen}
+        aria-controls="main-nav"
+        aria-label={menuOpen ? "Zamknij menu" : "Otwórz menu"}
+        onClick={() => setMenuOpen((value) => !value)}
+      >
+        {menuOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
       <button className="icon-button" type="button" onClick={onCartOpen} aria-label="Otwórz koszyk">
         <ShoppingBag size={20} />
         <span>{cartCount}</span>

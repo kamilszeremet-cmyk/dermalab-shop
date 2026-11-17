@@ -32,12 +32,12 @@ describe("customer view", () => {
   it("removes a line, persists the cart, and closes the drawer with Escape", async () => {
     const user = userEvent.setup();
     const { unmount } = render(<App admin={false} />);
-    await user.click(screen.getAllByRole("button", { name: /^dodaj$/i })[0]);
-    expect(screen.getByRole("complementary", { name: /koszyk/i })).toBeInTheDocument();
+    await user.click(screen.getAllByRole("button", { name: /^dodaj do koszyka:/i })[0]);
+    expect(screen.getByRole("dialog", { name: /koszyk/i })).toBeInTheDocument();
     expect(window.localStorage.getItem("dermalab_cart")).toContain("quantity");
 
     await user.keyboard("{Escape}");
-    expect(screen.queryByRole("complementary", { name: /koszyk/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: /koszyk/i })).not.toBeInTheDocument();
     unmount();
 
     render(<App admin={false} />);
@@ -120,7 +120,7 @@ describe("DermaLab storefront", () => {
     const addButtons = screen.getAllByRole("button", { name: /dodaj/i });
     await user.click(addButtons[0]);
 
-    expect(screen.getByRole("complementary", { name: /koszyk/i })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /koszyk/i })).toBeInTheDocument();
     expect(screen.getByText(/koszyk gotowy/i)).toBeInTheDocument();
     expect(screen.getByText(/endpoint checkoutu/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/dostawa/i)).toBeInTheDocument();
@@ -136,3 +136,73 @@ describe("DermaLab storefront", () => {
     expect(screen.getAllByRole("article").length).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe("cart quantity editing and drawer behaviour", () => {
+  async function openCartWithOne(user: ReturnType<typeof userEvent.setup>) {
+    render(<App admin={false} />);
+    await user.click(screen.getAllByRole("button", { name: /^dodaj do koszyka:/i })[0]);
+    return screen.getByRole("spinbutton", { name: /ilość/i }) as HTMLInputElement;
+  }
+
+  it("keeps the line while the quantity field is empty and commits on blur", async () => {
+    const user = userEvent.setup();
+    const input = await openCartWithOne(user);
+    await user.clear(input);
+    expect(screen.getByRole("spinbutton", { name: /ilość/i })).toBeInTheDocument();
+    expect(screen.queryByText(/koszyk jest pusty/i)).not.toBeInTheDocument();
+    await user.type(input, "3");
+    expect(input).toHaveValue(3);
+    await user.clear(input);
+    await user.tab();
+    expect(input).toHaveValue(3);
+  });
+
+  it("floors decimals and removes the line when 0 is committed", async () => {
+    const user = userEvent.setup();
+    const input = await openCartWithOne(user);
+    await user.clear(input);
+    await user.type(input, "2.7");
+    await user.tab();
+    expect(input).toHaveValue(2);
+    await user.clear(input);
+    await user.type(input, "0");
+    await user.tab();
+    expect(screen.getByText(/koszyk jest pusty/i)).toBeInTheDocument();
+    expect(screen.queryByText(/suma:/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/dostawa/i)).not.toBeInTheDocument();
+  });
+
+  it("clamps quantity to stock and exposes dialog semantics, backdrop close and focus return", async () => {
+    const user = userEvent.setup();
+    const input = await openCartWithOne(user);
+    expect(input).toHaveAttribute("max");
+    const max = Number(input.getAttribute("max"));
+    await user.clear(input);
+    await user.type(input, "999999");
+    await user.tab();
+    expect(input).toHaveValue(max);
+    const dialog = screen.getByRole("dialog", { name: /koszyk/i });
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    await user.click(dialog.parentElement as HTMLElement);
+    expect(screen.queryByRole("dialog", { name: /koszyk/i })).not.toBeInTheDocument();
+  });
+
+  it("hides the cookie banner while the cart is open", async () => {
+    const user = userEvent.setup();
+    render(<App admin={false} />);
+    expect(screen.getByRole("region", { name: /zgody cookies/i })).toBeInTheDocument();
+    await user.click(screen.getAllByRole("button", { name: /^dodaj do koszyka:/i })[0]);
+    expect(screen.queryByRole("region", { name: /zgody cookies/i })).not.toBeInTheDocument();
+  });
+
+  it("shows no internal marketing notes to customers and toggles the mobile menu", async () => {
+    const user = userEvent.setup();
+    render(<App admin={false} />);
+    expect(screen.queryByText(/przekaz reklamowy|pod kampanie/i)).not.toBeInTheDocument();
+    const toggle = screen.getByRole("button", { name: /otwórz menu/i });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await user.click(toggle);
+    expect(screen.getByRole("button", { name: /zamknij menu/i })).toHaveAttribute("aria-expanded", "true");
+  });
+});
+

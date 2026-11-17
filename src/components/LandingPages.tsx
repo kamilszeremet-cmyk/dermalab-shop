@@ -18,6 +18,7 @@ export function LandingPages({ pages, onSelect, admin = false }: LandingPagesPro
           <article className="landing-card" key={page.id}>
             <div>
               {admin && <p className="landing-kicker">{page.marginSignal}</p>}
+              {admin && <p className="landing-kicker">Notatka: {page.internalNote}</p>}
               <h3>{page.title}</h3>
               <p>{page.subtitle}</p>
             </div>
