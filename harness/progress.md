@@ -29,3 +29,8 @@ Admin: dodaj `?admin=1`.
 - A10: `landing.subtitle` to teraz tekst dla klienta; stare notatki w `internalNote` (tylko admin).
 - Low: aria-label "Dodaj do koszyka: <nazwa>"; koszyk `role=dialog` + `aria-modal`, fokus do szuflady i powrót, klik w tło zamyka; linki header/footer na /checkout/* prowadzą do `/#...`; chipy hero przewijają do katalogu; /checkout/sukces czyści koszyk tylko z `session_id`, inaczej neutralny komunikat; stopka bez duplikatu nazwy.
 - Testy: 60 (vitest), tsc i build przechodzą.
+
+## Runda 2 QA (niezależna) – READY
+- A1–A12: wszystkie PASS (harness/qa-round-2.json). Warunek stopu ready(x) spełniony po 1 rundzie napraw z 3.
+- Otwarte (low): linki /#sekcja z /checkout/* nie przewijają; brak focus trap w koszyku; menu mobilne nie zamyka się Escape/klikiem obok; "2,7" w ilości -> 27.
+- Poza zakresem/blokery live: prawdziwy Stripe key, feed hurtowni, dane firmy i regulamin.
