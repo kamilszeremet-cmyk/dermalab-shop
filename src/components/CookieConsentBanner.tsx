@@ -3,10 +3,11 @@ import type { CookieConsent, CookieConsentChoice } from "../domain/cookieConsent
 interface CookieConsentBannerProps {
   consent: CookieConsent;
   onChoose: (choice: CookieConsentChoice) => void;
+  hidden?: boolean;
 }
 
-export function CookieConsentBanner({ consent, onChoose }: CookieConsentBannerProps) {
-  if (consent.status !== "pending") return null;
+export function CookieConsentBanner({ consent, onChoose, hidden = false }: CookieConsentBannerProps) {
+  if (consent.status !== "pending" || hidden) return null;
 
   return (
     <section className="cookie-banner" aria-label="Zgody cookies">

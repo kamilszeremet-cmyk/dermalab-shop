@@ -10,9 +10,35 @@ export function addToCart(cart: CartLine[], product: StoreProduct): CartLine[] {
   return [...cart, { productId: product.id, quantity: 1 }];
 }
 
-export function updateQuantity(cart: CartLine[], productId: string, quantity: number): CartLine[] {
-  if (quantity <= 0) return removeFromCart(cart, productId);
-  return cart.map((line) => (line.productId === productId ? { ...line, quantity } : line));
+export function updateQuantity(
+  cart: CartLine[],
+  productId: string,
+  quantity: number,
+  maxQuantity?: number,
+): CartLine[] {
+  if (!Number.isFinite(quantity)) return cart;
+  let next = Math.floor(quantity);
+  if (next <= 0) return removeFromCart(cart, productId);
+  if (maxQuantity !== undefined && maxQuantity >= 1) next = Math.min(next, Math.floor(maxQuantity));
+  return cart.map((line) => (line.productId === productId ? { ...line, quantity: next } : line));
+}
+
+export type QuantityDraftResult =
+  | { kind: "set"; quantity: number }
+  | { kind: "remove" }
+  | { kind: "revert" };
+
+/** Interprets text typed into a quantity field when editing is committed. */
+export function parseQuantityDraft(draft: string, maxQuantity?: number): QuantityDraftResult {
+  const text = draft.trim().replace(",", ".");
+  if (text === "") return { kind: "revert" };
+  const value = Number(text);
+  if (!Number.isFinite(value)) return { kind: "revert" };
+  const whole = Math.floor(value);
+  if (value < 0) return { kind: "revert" };
+  if (whole === 0) return { kind: "remove" };
+  const capped = maxQuantity !== undefined && maxQuantity >= 1 ? Math.min(whole, Math.floor(maxQuantity)) : whole;
+  return { kind: "set", quantity: capped };
 }
 
 export function removeFromCart(cart: CartLine[], productId: string): CartLine[] {

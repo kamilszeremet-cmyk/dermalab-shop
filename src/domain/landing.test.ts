@@ -20,4 +20,11 @@ describe("landing pages", () => {
       onlyAvailable: true,
     });
   });
+
+  it("keeps internal notes out of customer-facing subtitles", () => {
+    for (const page of landingPages) {
+      expect(page.subtitle).not.toMatch(/reklam|kampani|landing|klientów|ROAS/i);
+      expect(page.internalNote.length).toBeGreaterThan(0);
+    }
+  });
 });

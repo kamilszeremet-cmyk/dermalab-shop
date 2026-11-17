@@ -12,7 +12,10 @@ import { ProductDetail } from "./components/ProductDetail";
 import { TrackingScripts } from "./components/TrackingScripts";
 import { TrustAndLegal } from "./components/TrustAndLegal";
 import { demoSupplierFeed } from "./data/demoSupplierFeed";
-import { addToCart, updateQuantity } from "./domain/cart";
+import { readAdminMode } from "./domain/adminMode";
+import { addToCart, removeFromCart, updateQuantity } from "./domain/cart";
+import { clearStoredCart, getBrowserCartStorage, loadCart, saveCart } from "./domain/cartStorage";
+import { readHasCheckoutSessionId, readView } from "./domain/route";
 import { filterProducts, recommendRoutineProducts, uniqueTags, uniqueValues } from "./domain/catalog";
 import { getSupplierFeedStatus, readSupplierFeedConfig } from "./domain/feedConfig";
 import { importSupplierRows } from "./domain/importer";
@@ -46,7 +49,11 @@ const defaultFilters: ProductFilters = {
   onlyAvailable: true,
 };
 
-export default function App() {
+export default function App({ admin: adminProp }: { admin?: boolean } = {}) {
+  const admin = useMemo(() => adminProp ?? readAdminMode(), [adminProp]);
+  const view = useMemo(() => readView(), []);
+  const orderConfirmed = view === "checkout_success" && readHasCheckoutSessionId();
+  const anchorPrefix = view === "store" ? "" : "/";
   const importReport = useMemo(() => importSupplierRows(demoSupplierFeed), []);
   const supplierReadiness = useMemo(() => getSupplierReadiness(icoSupplierProfile), []);
   const feedConfig = useMemo(() => readSupplierFeedConfig(), []);
@@ -64,11 +71,30 @@ export default function App() {
   const products = importReport.products;
   const [filters, setFilters] = useState<ProductFilters>(defaultFilters);
   const [selectedProduct, setSelectedProduct] = useState<StoreProduct | null>(products[0] ?? null);
-  const [cart, setCart] = useState<CartLine[]>([]);
+  const [cart, setCart] = useState<CartLine[]>(() => {
+    if (readView() === "checkout_success" && readHasCheckoutSessionId()) return [];
+    return loadCart(getBrowserCartStorage(), products.map((product) => product.id));
+  });
   const [cartOpen, setCartOpen] = useState(false);
 
   const visibleProducts = useMemo(() => filterProducts(products, filters), [products, filters]);
   const recommendations = selectedProduct ? recommendRoutineProducts(selectedProduct, products) : [];
+
+  useEffect(() => {
+    if (orderConfirmed) clearStoredCart(getBrowserCartStorage());
+  }, [orderConfirmed]);
+
+  useEffect(() => {
+    if (orderConfirmed) return;
+    saveCart(getBrowserCartStorage(), cart);
+  }, [cart, orderConfirmed]);
+
+  function handleProductSelect(product: StoreProduct) {
+    setSelectedProduct(product);
+    setTimeout(() => {
+      document.getElementById("product-detail")?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+    }, 0);
+  }
 
   useEffect(() => {
     if (!selectedProduct) return;
@@ -88,9 +114,52 @@ export default function App() {
   return (
     <main className="app-shell">
       <TrackingScripts config={consentedTrackingConfig} />
-      <Header cartCount={cart.reduce((sum, line) => sum + line.quantity, 0)} onCartOpen={() => setCartOpen(true)} />
-      <HomePage onConcernSelect={(concern) => setFilters({ ...defaultFilters, concern })} />
+      <Header
+        admin={admin}
+        anchorPrefix={anchorPrefix}
+        cartCount={cart.reduce((sum, line) => sum + line.quantity, 0)}
+        onCartOpen={() => setCartOpen(true)}
+      />
+      {view === "checkout_success" && !orderConfirmed && (
+        <section className="checkout-return" aria-label="Zamówienie">
+          <h1>Zamówienie</h1>
+          <p>Nie znaleźliśmy potwierdzenia płatności dla tego adresu. Jeśli płatność została zakończona, potwierdzenie dotrze na Twój e-mail.</p>
+          <a className="button-link" href="/">
+            Wróć do sklepu
+          </a>
+        </section>
+      )}
+      {orderConfirmed && (
+        <section className="checkout-return" aria-label="Potwierdzenie zamówienia">
+          <h1>Dziękujemy za zamówienie!</h1>
+          <p>Płatność została przyjęta. Potwierdzenie zamówienia wyślemy na adres e-mail podany w trakcie płatności.</p>
+          <a className="button-link" href="/">
+            Wróć do sklepu
+          </a>
+        </section>
+      )}
+      {view === "checkout_cancelled" && (
+        <section className="checkout-return" aria-label="Płatność anulowana">
+          <h1>Płatność anulowana</h1>
+          <p>Nic nie zostało pobrane. Produkty nadal czekają w Twoim koszyku.</p>
+          <button type="button" onClick={() => setCartOpen(true)}>
+            Otwórz koszyk
+          </button>
+          <a className="button-link" href="/">
+            Wróć do sklepu
+          </a>
+        </section>
+      )}
+      {view === "store" && (
+        <>
+      <HomePage
+        onConcernSelect={(concern) => {
+          setFilters({ ...defaultFilters, concern });
+          setTimeout(() => document.getElementById("catalog")?.scrollIntoView?.({ behavior: "smooth", block: "start" }), 0);
+        }}
+      />
       <LandingPages
+        admin={admin}
         pages={landingPages}
         onSelect={(page) => {
           setFilters(landingFilterForPage(page));
@@ -101,14 +170,20 @@ export default function App() {
         products={visibleProducts}
         filters={filters}
         onFiltersChange={setFilters}
-        onProductSelect={setSelectedProduct}
+        onProductSelect={handleProductSelect}
         onAddToCart={handleAddToCart}
         concerns={uniqueTags(products, "skinConcerns")}
         skinTypes={uniqueTags(products, "skinTypes")}
         ingredients={uniqueTags(products, "activeIngredients")}
         categories={uniqueValues(products, "category")}
       />
-      <ProductDetail product={selectedProduct} recommendations={recommendations} onAddToCart={handleAddToCart} />
+      <ProductDetail
+        admin={admin}
+        product={selectedProduct}
+        recommendations={recommendations}
+        onAddToCart={handleAddToCart}
+      />
+      {admin && (
       <ImportReportPanel
         report={importReport}
         supplier={icoSupplierProfile}
@@ -116,17 +191,26 @@ export default function App() {
         feedConfig={feedConfig}
         feedStatus={feedStatus}
       />
-      <TrustAndLegal config={storeConfig} status={storeLegalStatus} trackingConfig={trackingConfig} />
-      <LegalDocuments documents={legalDocuments} />
-      <Footer config={storeConfig} />
-      <CookieConsentBanner consent={cookieConsent} onChoose={handleCookieChoice} />
+      )}
+      <TrustAndLegal admin={admin} config={storeConfig} status={storeLegalStatus} trackingConfig={trackingConfig} />
+      <LegalDocuments admin={admin} documents={legalDocuments} />
+        </>
+      )}
+      <Footer config={storeConfig} anchorPrefix={anchorPrefix} />
+      <CookieConsentBanner consent={cookieConsent} onChoose={handleCookieChoice} hidden={cartOpen} />
       <CartDrawer
         open={cartOpen}
         cart={cart}
         products={products}
         checkoutEndpoint={checkoutEndpoint}
+        admin={admin}
         onClose={() => setCartOpen(false)}
-        onQuantityChange={(productId, quantity) => setCart((current) => updateQuantity(current, productId, quantity))}
+        onRemove={(productId) => setCart((current) => removeFromCart(current, productId))}
+        onQuantityChange={(productId, quantity) =>
+          setCart((current) =>
+            updateQuantity(current, productId, quantity, products.find((item) => item.id === productId)?.stock),
+          )
+        }
         onBeginCheckout={(payload) =>
           trackEvent(
             consentedTrackingConfig,

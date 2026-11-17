@@ -2,17 +2,21 @@ import type { LegalDocument } from "../domain/legalDocuments";
 
 interface LegalDocumentsProps {
   documents: LegalDocument[];
+  admin?: boolean;
 }
 
-export function LegalDocuments({ documents }: LegalDocumentsProps) {
+export function LegalDocuments({ documents, admin = false }: LegalDocumentsProps) {
   return (
     <section className="section legal-documents-section" id="dokumenty">
       <div className="section-heading">
         <p className="section-label">Dokumenty sklepu</p>
         <h2>Regulamin, polityka prywatności, zwroty i płatności</h2>
-        <p>
-          Szkice gotowe do uzupełnienia danymi firmy. Przed publikacją sprzedażową powinny przejść weryfikację prawną.
-        </p>
+        {admin && (
+          <p>
+            Szkice gotowe do uzupełnienia danymi firmy. Przed publikacją sprzedażową powinny przejść weryfikację
+            prawną.
+          </p>
+        )}
       </div>
       <div className="legal-document-list">
         {documents.map((document) => (

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addToCart, calculateCartTotals, removeFromCart, updateQuantity, validateDemoCheckout } from "./cart";
+import { parseQuantityDraft, addToCart, calculateCartTotals, removeFromCart, updateQuantity, validateDemoCheckout } from "./cart";
 import type { StoreProduct } from "./product";
 
 const product = makeProduct("serum", 79.9, 10);
@@ -68,3 +68,24 @@ function makeProduct(id: string, retailPrice: number, stock: number): StoreProdu
     },
   };
 }
+
+describe("quantity editing", () => {
+  const cart = [{ productId: "serum", quantity: 2 }];
+
+  it("floors, clamps to stock and ignores NaN in updateQuantity", () => {
+    expect(updateQuantity(cart, "serum", 2.9)).toEqual([{ productId: "serum", quantity: 2 }]);
+    expect(updateQuantity(cart, "serum", 50, 10)).toEqual([{ productId: "serum", quantity: 10 }]);
+    expect(updateQuantity(cart, "serum", Number.NaN)).toBe(cart);
+    expect(updateQuantity(cart, "serum", 0)).toEqual([]);
+  });
+
+  it("parses drafts", () => {
+    expect(parseQuantityDraft("")).toEqual({ kind: "revert" });
+    expect(parseQuantityDraft("-2")).toEqual({ kind: "revert" });
+    expect(parseQuantityDraft("abc")).toEqual({ kind: "revert" });
+    expect(parseQuantityDraft("0")).toEqual({ kind: "remove" });
+    expect(parseQuantityDraft("0.5")).toEqual({ kind: "remove" });
+    expect(parseQuantityDraft("1.5")).toEqual({ kind: "set", quantity: 1 });
+    expect(parseQuantityDraft("999", 12)).toEqual({ kind: "set", quantity: 12 });
+  });
+});

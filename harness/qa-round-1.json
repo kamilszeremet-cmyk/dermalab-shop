@@ -1,0 +1,183 @@
+{
+  "round": 1,
+  "results": [
+    {
+      "id": "A1",
+      "pass": true,
+      "evidence": "Linux: `npx vitest run` / `npm run test` -> 16 files, 51 tests passed (exit 0). `npx tsc --noEmit` exit 0. `npm run build` (tsc --noEmit && vite build) exit 0, dist 239 kB JS. Scripts no longer Windows-specific.",
+      "defects": []
+    },
+    {
+      "id": "A2",
+      "pass": true,
+      "evidence": "Chromium 1280x900 at /: 0 console errors/pageerrors; 16 product cards. Problem=niedoskonałości -> 3 cards (all matching). Then Kategoria=SPF -> 0 cards and role=status 'Brak produktów dla wybranych filtrów.' + 'Wyczyść filtry' button, which restores 16 cards. Hero chip 'przebarwienia' sets Problem filter (3 cards); 'Zobacz zestaw: spf' sets Problem=spf (5 cards).",
+      "defects": [
+        {
+          "title": "Hero concern chips set the filter but do not scroll to the catalog",
+          "repro_steps": "1. Open / at 1280x900. 2. Click hero chip 'przebarwienia'.",
+          "expected": "Catalog with filtered results scrolls into view (like the 'Zobacz zestaw' landing buttons do).",
+          "actual": "Filter changes silently; #catalog stays ~1420px below the viewport top, customer sees no feedback.",
+          "severity": "low"
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "pass": true,
+      "evidence": "Clicked name of card #6 'Serum na przebarwienia z niacynamidem', name of card #13 'Krem pod oczy z peptydami' and image of card #9 'Serum nawilżające z kwasem hialuronowym': #product-detail h2 equalled the clicked product each time and #product-detail top was 0px after smooth scroll (scrolled into view). Detail shows name, category, description, ingredients, 'Dodaj do koszyka - <cena>' button. Screenshot qa/a3-detail.png.",
+      "defects": []
+    },
+    {
+      "id": "A4",
+      "pass": false,
+      "evidence": "Basic flow works: header counter 0->1 on 'Dodaj' and drawer opens; qty 3 -> 'Produkty: 158.97 zł', qty 4 -> 211.96 zł; 'Usuń: Serum barierowe z ceramidami' removes only that line and counter drops 3->2; empty cart shows 'Koszyk jest pusty.' and 'Przejdź do płatności' is disabled. Over-stock (13 > stock 12) shows alert 'jest niedostępny w wybranej ilości' and disables checkout. FAIL because the quantity input itself is broken for normal editing and accepts non-integer quantities (see defects).",
+      "defects": [
+        {
+          "title": "Clearing the quantity field to retype a number removes the product from the cart",
+          "repro_steps": "1. Add any product (qty 1). 2. In the cart click into the 'Ilość' field and press Backspace to delete '1' (intending to type '3'). 3. Type '3'.",
+          "expected": "Field can be temporarily empty while typing; line stays in the cart and ends with qty 3 (or removal only via 'Usuń').",
+          "actual": "On Backspace Number('') = 0 -> updateQuantity removes the line immediately; drawer shows 'Koszyk jest pusty.', counter 0, typed '3' goes nowhere. Same for typing '-2' or ArrowDown from 1.",
+          "severity": "med"
+        },
+        {
+          "title": "Fractional quantities are accepted and sent to checkout",
+          "repro_steps": "1. Add 'CeraVe piankowa emulsja oczyszczająca'. 2. Type 1.5 in the 'Ilość' field. 3. Click 'Przejdź do płatności' and inspect POST body.",
+          "expected": "Quantity restricted to positive integers (step=1, rounding or validation).",
+          "actual": "Header counter shows '1.5', Suma 92.48 zł, checkout enabled, POST lineItems[0].quantity = 1.5 (Stripe would reject). After reload loadCart silently drops the line (counter 0).",
+          "severity": "med"
+        },
+        {
+          "title": "Empty cart still shows shipping cost in total",
+          "repro_steps": "1. Add a product, then click 'Usuń'. 2. Look at the checkout box.",
+          "expected": "Suma 0.00 zł (or shipping hidden) for an empty cart.",
+          "actual": "'Produkty: 0.00 zł', shipping select still active, 'Suma: 12.99 zł'.",
+          "severity": "low"
+        },
+        {
+          "title": "Quantity input has no max/stock limit",
+          "repro_steps": "Type 999999 in 'Ilość'.",
+          "expected": "Input capped at stock or clear max attribute.",
+          "actual": "Accepted; 'Suma: 85989914.01 zł' displayed (checkout correctly disabled with stock alert).",
+          "severity": "low"
+        }
+      ]
+    },
+    {
+      "id": "A5",
+      "pass": true,
+      "evidence": "CeraVe 52.99: qty1 -> Suma 65.98 (52.99+12.99), options InPost/Kurier only. qty3 (158.97) -> 171.96, no free option. qty4 (211.96) -> 'Darmowa dostawa od 179 zł - 0.00 zł' auto-selected, Suma 211.96. Back to qty3 -> free option disappears, falls back to InPost, 171.96. Explicit 'Kurier' kept across crossing threshold both ways (228.95 / 122.97, both correct to the grosz). Explicit free -> drop below -> InPost; back above -> free again. 3-product cart 158.97+12.99=171.96. All checked totals = products + shipping exactly. Screenshot qa/a5-free.png.",
+      "defects": []
+    },
+    {
+      "id": "A6",
+      "pass": true,
+      "evidence": "3-line cart + 'Tylko niezbędne': localStorage dermalab_cart and dermalab_cookie_consent={status:essential} written; after reload counter 3, same 3 lines, Suma 171.96, cookie banner absent. 'Akceptuję wszystkie' also persists (status accepted). Corrupted storage ('{garbage' / 'xx') -> app loads with empty cart, banner shown, no console errors. Emptied cart persists as 0 after reload.",
+      "defects": []
+    },
+    {
+      "id": "A7",
+      "pass": true,
+      "evidence": "Cart CeraVe x1 + Serum barierowe x2 (216.97). 3 runs: InPost -> UI Suma 229.96, POST totalAmount 22996; Kurier -> 233.96 / 23396; free -> 216.97 / 21697. Body: lineItems [{sku ICO-CLE-001, quantity 1, unitAmount 5299}, {sku ICO-SER-002, quantity 2, unitAmount 8199}], shippingOption matches selected option, currency pln, successUrl/cancelUrl /checkout/sukces|/anulowane. Response {url:'/checkout/sukces?session_id=mock'} -> browser navigated there. Double-click on pay button produced exactly 1 POST.",
+      "defects": []
+    },
+    {
+      "id": "A8",
+      "pass": true,
+      "evidence": "page.route 500 -> role=alert 'Nie udało się rozpocząć płatności. Spróbuj ponownie za chwilę.', button text back to 'Przejdź do płatności', enabled, URL stays '/', second click sends a new request. Real mock with header x-mock-fail:1 -> status 500, same message. Aborted request -> 'Nie udało się połączyć z płatnościami…', enabled. 200 without url -> error, no redirect. Slow (1.5 s) response -> button shows 'Przekierowuję do płatności…' and is disabled while pending, re-enabled after error. Only console errors are the browser's own 'Failed to load resource 500'. Screenshot qa/a8-error.png.",
+      "defects": []
+    },
+    {
+      "id": "A9",
+      "pass": true,
+      "evidence": "After mock checkout redirect /checkout/sukces?session_id=mock shows h1 'Dziękujemy za zamówienie!', counter 0, localStorage dermalab_cart removed; reload keeps confirmation and empty cart; 'Wróć do sklepu' -> / with 16 products and counter 0. /checkout/anulowane with 2-line cart: h1 'Płatność anulowana', 'Produkty nadal czekają w Twoim koszyku', counter 2, 'Otwórz koszyk' shows both lines; survives reload; trailing slash also works. Screenshots qa/a9-success.png, qa/a9-cancel.png.",
+      "defects": [
+        {
+          "title": "Header and footer anchor links are dead on /checkout/sukces and /checkout/anulowane",
+          "repro_steps": "1. Open /checkout/anulowane. 2. Click 'Katalog' / 'Zestawy' / 'Rutyny' / 'Regulamin' in header or document links in footer.",
+          "expected": "Links lead back to the store sections (e.g. href='/#catalog').",
+          "actual": "hrefs are '#catalog', '#seo', '#routine', '#dokumenty', '#regulamin', … and none of these ids exist on the return views; clicking does nothing.",
+          "severity": "low"
+        }
+      ]
+    },
+    {
+      "id": "A10",
+      "pass": true,
+      "evidence": "Without ?admin=1 (page + open cart): no #import section, no .seo-panel, no 'Hurtownia' nav link, no 'Endpoint checkoutu', 'Demo feed', 'Dane firmy do uzupełnienia', 'NIP: brak', 'Tracking reklam', 'Deployment', marżowe/ROAS kickers, 'Stripe Checkout + P24 gotowe…' in visible text or DOM (legal docs excluded per scope). With ?admin=1 all of them are visible (import report, SEO produktu, 'Endpoint checkoutu: skonfigurowany', 'Demo feed active', company-data status, tracking, deployment, margin kickers).",
+      "defects": [
+        {
+          "title": "Landing-set descriptions still contain internal marketing notes visible to customers",
+          "repro_steps": "Open / (no admin), look at section 'Zestawy'.",
+          "expected": "Customer-facing copy only.",
+          "actual": "Visible texts: 'Najprostszy przekaz reklamowy: aktywne serum wieczorem, ochrona UV rano.', 'Landing sezonowy pod kampanie kwiecień-wrzesień i stałą edukację przeciw przebarwieniom.', 'Oferta dla osób, które kupują ostrożnie i potrzebują jasnego, klinicznego języka.', 'Zestaw cleanser + serum + krem dla klientów szukających…' – these are internal campaign/positioning notes, not shop copy.",
+          "severity": "med"
+        }
+      ]
+    },
+    {
+      "id": "A11",
+      "pass": false,
+      "evidence": "390x844 (isMobile, touch): scrollWidth=clientWidth=390 on /, with cart open, /checkout/sukces and /?admin=1 (no overflowing elements). Cart opens on tap of 'Dodaj', qty change to 2 -> Suma 118.97, 'Zamknij koszyk' closes, header cart button reopens. FAIL: with 4 cart lines the drawer content (scrollHeight 891) exceeds the 844px fixed drawer, overflow is 'visible' so it cannot be scrolled and the 'Przejdź do płatności' button sits at y=836–876, outside the viewport; the cookie banner (z-index 50) additionally covers the bottom of the drawer. Main navigation is display:none at <=820px with no replacement. Screenshots qa/a11-home.png, qa/a11-cart.png, qa/a11-cart-banner.png, qa/a11-cart-4lines.png.",
+      "defects": [
+        {
+          "title": "Cart drawer does not scroll – checkout button unreachable with several items (mobile and 768px-high laptops)",
+          "repro_steps": "1. Viewport 390x844. 2. Add 4 different products (e.g. CeraVe piankowa, Serum barierowe, La Roche-Posay SPF 50, Opaska). 3. Open cart, accept cookies, try to swipe/scroll inside the drawer.",
+          "expected": "Drawer content scrolls (overflow-y:auto) and 'Przejdź do płatności' is reachable.",
+          "actual": "aside.cart-drawer height 844, scrollHeight 891, overflow-y visible; wheel/swipe scrolls the page behind (scrollY 600) while the drawer stays fixed; pay button at y=836–876 (off-screen). Same on desktop 1366x768: button at y=816–856, completely invisible.",
+          "severity": "high"
+        },
+        {
+          "title": "Cookie banner overlays the open cart drawer",
+          "repro_steps": "1. Fresh session (no consent) at 390x844. 2. Add 4 products, open cart.",
+          "expected": "Drawer above banner, or banner does not hide cart controls.",
+          "actual": "Banner (.cookie-banner z-index 50 > .cart-backdrop 40) covers y=624–832 including shipping select, Suma and pay button (screenshot a11-cart-banner.png).",
+          "severity": "med"
+        },
+        {
+          "title": "No navigation on mobile",
+          "repro_steps": "Open / at 390x844 and look for Katalog/Zestawy/Rutyny/Regulamin links.",
+          "expected": "Navigation usable on mobile (spec 8), e.g. hamburger or wrapped links.",
+          "actual": ".site-header nav {display:none} under 820px; no alternative menu – nav bounding box null.",
+          "severity": "med"
+        }
+      ]
+    },
+    {
+      "id": "A12",
+      "pass": true,
+      "evidence": "All 16 catalog images and the detail image have alt equal to the product name; no <img> without alt. All buttons/links have non-empty accessible names (cart: 'Otwórz koszyk', 'Zamknij koszyk', 'Usuń: <produkt>', qty inputs 'Ilość: <produkt>'); all inputs/selects labelled. Escape closes the cart (also when focus is in the qty input).",
+      "defects": [
+        {
+          "title": "16 identical 'Dodaj' buttons without product context",
+          "repro_steps": "Inspect catalog buttons with a screen reader / accessibility tree.",
+          "expected": "e.g. aria-label 'Dodaj do koszyka: <produkt>'.",
+          "actual": "All named just 'Dodaj'.",
+          "severity": "low"
+        },
+        {
+          "title": "Cart drawer is not a dialog: no role/aria-modal, focus not moved in or restored, backdrop click does nothing",
+          "repro_steps": "1. Click 'Dodaj'. 2. Check document.activeElement and drawer role. 3. Click on the dimmed backdrop.",
+          "expected": "role=dialog aria-modal, focus moves into drawer and back to trigger on close; backdrop click closes.",
+          "actual": "aside without role; focus stays on the 'Dodaj' button behind the overlay; backdrop click leaves drawer open; page behind still scrolls.",
+          "severity": "low"
+        }
+      ]
+    }
+  ],
+  "extra_defects": [
+    {
+      "title": "Direct visit to /checkout/sukces clears the cart without any session check",
+      "repro_steps": "1. Add products. 2. Navigate to /checkout/sukces (no session_id, e.g. from history/bookmark).",
+      "expected": "Cart cleared only after a real checkout return (at least session_id present).",
+      "actual": "Confirmation 'Dziękujemy za zamówienie!' shown and cart wiped for any visit.",
+      "severity": "low"
+    },
+    {
+      "title": "Footer shows brand name twice",
+      "repro_steps": "Open / and scroll to the footer.",
+      "expected": "Single brand line / company data.",
+      "actual": "Footer text 'DermaLab' followed by 'DermaLab'.",
+      "severity": "low"
+    }
+  ]
+}
