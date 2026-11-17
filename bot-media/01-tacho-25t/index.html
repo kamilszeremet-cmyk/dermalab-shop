@@ -1,0 +1,422 @@
+<title>Tacho 2,5T</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<style>
+/* layout: single-column 16-bit console — copper header, dashboard strip, route map, cargo exchange, actions, log */
+:root{
+  --bg:#08113a; --panel:#0f1b55; --panel2:#15246b; --line:#2b3d95;
+  --fg:#e9edff; --dim:#93a0dc; --orange:#ff9a1f; --cyan:#45e2ff;
+  --yellow:#ffe24d; --red:#ff4d63; --green:#62ff8f;
+  --hi:#6f86ff; --lo:#050a26;
+  --disp:"Press Start 2P", ui-monospace, "Courier New", monospace;
+  --body:"VT323", ui-monospace, "Courier New", monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--fg)}
+[hidden]{display:none!important}
+body{font-family:var(--body);font-size:21px;line-height:1.12;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 28px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.copper{height:10px;background:repeating-linear-gradient(90deg,#ff3d6e 0 8%,#ff9a1f 8% 16%,#ffe24d 16% 24%,#62ff8f 24% 32%,#45e2ff 32% 40%,#6f86ff 40% 48%,#c06bff 48% 56%);background-size:200% 100%;animation:cop 4s linear infinite}
+@keyframes cop{to{background-position:-200% 0}}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{font-family:var(--disp);font-size:clamp(15px,4.4vw,24px);margin:0;color:var(--orange);text-shadow:3px 3px 0 var(--lo),0 0 12px rgba(255,154,31,.35);letter-spacing:1px}
+h1 small{display:block;font-size:.42em;color:var(--cyan);margin-top:6px;text-shadow:none;letter-spacing:.5px}
+h2{font-family:var(--disp);font-size:11px;margin:0 0 8px;color:var(--yellow);letter-spacing:1px;text-transform:uppercase;line-height:1.5}
+.btn{font-family:var(--disp);font-size:10px;line-height:1.3;color:var(--fg);background:var(--panel2);border:2px solid;border-color:var(--hi) var(--lo) var(--lo) var(--hi);padding:10px 12px;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;min-height:40px}
+.btn:active{border-color:var(--lo) var(--hi) var(--hi) var(--lo)}
+.btn:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.go{background:var(--orange);color:var(--lo);border-color:#ffd08a #8a4c00 #8a4c00 #ffd08a}
+.btn.sm{font-size:9px;padding:8px 10px;min-height:34px}
+.panel{background:var(--panel);border:2px solid var(--line);padding:10px 12px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.stat{background:var(--panel);border:2px solid var(--line);padding:6px 8px;min-width:0}
+.stat b{display:block;font-family:var(--disp);font-size:8px;color:var(--dim);font-weight:400;margin-bottom:5px;letter-spacing:.5px}
+.stat span{font-size:24px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bar{min-width:0}
+.bar .lbl{display:flex;justify-content:space-between;font-size:17px;color:var(--dim);gap:4px}
+.bar .lbl i{font-style:normal;color:var(--fg);font-variant-numeric:tabular-nums;white-space:nowrap}
+.track{height:10px;background:var(--lo);border:1px solid var(--line);margin-top:3px;position:relative}
+.fill{height:100%;background:var(--green);width:0;transition:width .3s}
+.fill.warn{background:var(--yellow)}.fill.bad{background:var(--red)}
+.mapbox{background:var(--lo);border:2px solid var(--line);position:relative}
+svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.edge{stroke:var(--line);stroke-width:.45}
+.edge.nb{stroke:var(--cyan);stroke-width:.6;stroke-dasharray:1.2 .8}
+.edge.sel{stroke:var(--orange);stroke-width:.9;stroke-dasharray:none}
+.km{font-family:var(--body);font-size:2.4px;fill:var(--dim)}
+.node circle.dot{fill:var(--panel2);stroke:var(--hi);stroke-width:.4}
+.node.nb circle.dot{fill:var(--cyan);stroke:var(--fg)}
+.node.here circle.dot{fill:var(--orange);stroke:var(--yellow)}
+.node.dest circle.ring{stroke:var(--yellow);stroke-width:.5;fill:none;stroke-dasharray:1 .7}
+.node text{font-family:var(--body);font-size:3.4px;fill:var(--fg);paint-order:stroke;stroke:var(--lo);stroke-width:.8px}
+.node.nb text{fill:var(--cyan)}.node.here text{fill:var(--orange)}
+.node{cursor:pointer}
+.pulse{fill:none;stroke:var(--orange);stroke-width:.4;animation:pl 1.4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pl{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(2.6)}}
+.bus{fill:var(--yellow);stroke:var(--lo);stroke-width:.3}
+.leg{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.leg p{margin:0;min-width:0}
+.warns{color:var(--yellow);font-size:18px;margin-top:4px}
+.warns .r{color:var(--red)}
+.list{display:flex;flex-direction:column;gap:6px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;background:var(--panel2);border:1px solid var(--line);padding:6px 8px}
+.item .t{min-width:0}
+.item .t strong{color:var(--cyan);font-weight:400}
+.item .m{font-size:18px;color:var(--dim)}
+.item .pay{color:var(--green);font-variant-numeric:tabular-nums}
+.late{color:var(--red)}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.log{font-size:18px;display:flex;flex-direction:column;gap:3px;max-height:220px;overflow:auto}
+.log div{color:var(--dim)}.log div:first-child{color:var(--fg)}
+.log .good{color:var(--green)}.log .bad{color:var(--red)}.log .warn{color:var(--yellow)}
+.log time{color:var(--hi);margin-right:6px}
+.empty{color:var(--dim);font-size:18px}
+.overlay{position:fixed;inset:0;background:rgba(5,10,38,.94);display:flex;align-items:center;justify-content:center;z-index:20;
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));overflow:auto}
+.card{max-width:560px;width:100%;background:var(--panel);border:3px solid;border-color:var(--hi) var(--lo) var(--lo) var(--hi);padding:18px;display:flex;flex-direction:column;gap:12px}
+.card p{margin:0}
+.choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.choice button{text-align:left;display:flex;flex-direction:column;gap:8px;height:100%}
+.choice button span{font-family:var(--body);font-size:18px;text-transform:none;letter-spacing:0;color:inherit;line-height:1.1}
+.big{font-family:var(--disp);font-size:clamp(16px,5vw,26px);color:var(--green);margin:4px 0}
+.rank{font-family:var(--disp);font-size:12px;color:var(--orange);line-height:1.5}
+.sum{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-variant-numeric:tabular-nums}
+.sum span:nth-child(even){text-align:right}
+.fine{font-size:17px;color:var(--dim)}
+.topbtns{display:flex;gap:8px}
+@media (max-width:520px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .choice{grid-template-columns:1fr}
+  body{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){.copper,.pulse{animation:none}}
+</style>
+
+<div class="wrap">
+  <div class="copper" aria-hidden="true"></div>
+  <header>
+    <h1>TACHO 2,5T<small>TYDZIEŃ EKSPRESU · BAZA OPOLE</small></h1>
+    <div class="topbtns">
+      <button class="btn sm" id="musicBtn" type="button">♪ Muza: off</button>
+      <button class="btn sm" id="newBtn" type="button">Nowy tydzień</button>
+    </div>
+  </header>
+
+  <section class="stats" aria-label="Stan">
+    <div class="stat"><b>CZAS</b><span id="sTime">Pn 06:00</span></div>
+    <div class="stat"><b>WYNIK NETTO</b><span id="sMoney">0 €</span></div>
+    <div class="stat"><b>PALIWO</b><span id="sFuel">80 L</span></div>
+    <div class="stat"><b>NA PACE</b><span id="sLoad">0/650 kg</span></div>
+  </section>
+
+  <section class="panel bars" aria-label="Tachograf i zmęczenie">
+    <div class="bar"><div class="lbl">Od przerwy <i id="bBreak">0:00</i></div><div class="track"><div class="fill" id="fBreak"></div></div></div>
+    <div class="bar"><div class="lbl">Jazda dziś <i id="bDay">0:00</i></div><div class="track"><div class="fill" id="fDay"></div></div></div>
+    <div class="bar"><div class="lbl">Zmęczenie <i id="bFat">0%</i></div><div class="track"><div class="fill" id="fFat"></div></div></div>
+  </section>
+
+  <div class="mapbox"><svg id="map" viewBox="0 0 100 92" role="img" aria-label="Mapa tras"></svg></div>
+
+  <section class="panel" id="legPanel"></section>
+
+  <section class="panel">
+    <h2 id="exTitle">Giełda: Opole</h2>
+    <div class="list" id="offers"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Na pace</h2>
+    <div class="list" id="cargo"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Postój</h2>
+    <div class="acts" id="acts"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Dziennik</h2>
+    <div class="log" id="log" aria-live="polite"></div>
+  </section>
+  <div class="copper" aria-hidden="true"></div>
+</div>
+
+<div class="overlay" id="ov"></div>
+
+<script>
+(()=>{
+const C={
+ OPO:['Opole',70,46,'PL'],WRO:['Wrocław',66,37,'PL'],POZ:['Poznań',63,25,'PL'],WAW:['Warszawa',84,26,'PL'],KRK:['Kraków',82,54,'PL'],
+ BER:['Berlin',50,23,'DE'],LEJ:['Lipsk',44,36,'DE'],HAM:['Hamburg',35,12,'DE'],MUC:['Monachium',42,67,'DE'],FRA:['Frankfurt',27,51,'DE'],CGN:['Kolonia',19,40,'DE'],
+ PRG:['Praga',53,50,'CZ'],VIE:['Wiedeń',68,67,'AT'],AMS:['Amsterdam',12,25,'NL'],BRU:['Bruksela',8,40,'BE'],PAR:['Paryż',6,58,'FR'],LYO:['Lyon',13,80,'FR'],MIL:['Mediolan',37,86,'IT']};
+const E=[['OPO','WRO',95],['OPO','KRK',170],['OPO','VIE',375],['WRO','POZ',180],['WRO','BER',345],['WRO','PRG',280],['POZ','WAW',310],['POZ','BER',270],['WAW','KRK',295],['KRK','VIE',430],['BER','HAM',290],['BER','LEJ',190],['LEJ','PRG',250],['LEJ','FRA',390],['LEJ','MUC',430],['PRG','MUC',380],['PRG','VIE',330],['VIE','MUC',435],['HAM','AMS',460],['HAM','CGN',425],['CGN','AMS',260],['CGN','BRU',210],['CGN','FRA',190],['FRA','MUC',395],['BRU','PAR',310],['BRU','AMS',210],['PAR','LYO',465],['LYO','MIL',440],['MUC','MIL',490],['FRA','PAR',570]];
+const FUEL={PL:1.45,DE:1.78,CZ:1.55,AT:1.62,NL:1.98,BE:1.82,FR:1.88,IT:1.92};
+const VEH={'25':{name:'Bus 2,5 t',cap:650,cons:9.5,tacho:false},'35':{name:'Bus 3,5 t',cap:1150,cons:11.5,tacho:true}};
+const SPEED=78, END=126, TANK=80;
+const DAYS=['Pn','Wt','Śr','Cz','Pt','Sb','Nd'];
+const GOODS=['części do linii produkcyjnej','skrzynia biegów do ciągnika','serwer do banku','próbki laboratoryjne','felgi do salonu','dokumenty do notariusza','silnik do koparki','wino na wesele','kable na budowę','części do Amigi 500 dla kolekcjonera','pierogi na festiwal','turbo do Audi','matryce drukarskie','drzwi do hotelu','płyty winylowe, jazz, pilne','pompa do oczyszczalni','nagłośnienie na koncert d&b','sztabki? nie, ołowiane obciążniki'];
+const ADJ={};for(const k in C)ADJ[k]=[];
+for(const [a,b,km] of E){ADJ[a].push([b,km]);ADJ[b].push([a,km]);}
+const edgeKm=(a,b)=>{const e=ADJ[a].find(x=>x[0]===b);return e?e[1]:null};
+function dij(src){const d={};for(const k in C)d[k]=Infinity;d[src]=0;const q=new Set(Object.keys(C));
+ while(q.size){let u=null;for(const k of q)if(u===null||d[k]<d[u])u=k;q.delete(u);for(const [v,w] of ADJ[u])if(d[u]+w<d[v])d[v]=d[u]+w;}return d;}
+const DIST={};for(const k in C)DIST[k]=dij(k);
+
+const rnd=Math.random, pick=a=>a[Math.floor(rnd()*a.length)];
+const eur=v=>(v<0?'−':'')+Math.round(Math.abs(v)).toLocaleString('pl-PL')+' €';
+const hm=h=>{const m=Math.max(0,Math.round(h*60));return Math.floor(m/60)+':'+String(m%60).padStart(2,'0')};
+const clock=t=>{const m=Math.round(t*60);const d=Math.floor(m/1440);const r=m-d*1440;return DAYS[d%7]+' '+String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0')};
+const $=id=>document.getElementById(id);
+
+let S=null, busy=false;
+function fresh(mode){return{mode,t:6,city:'OPO',income:0,cost:0,fuel:TANK,cargo:[],offers:[],sinceBreak:0,dayDrive:0,awake:0,fatigue:0,
+ ext:2,reduced:3,extToday:false,vBreak:false,vDay:false,vRest:false,viol:[],vig:{},log:[],km:0,delivered:0,late:0,sel:null,over:false,oid:1};}
+const V=()=>VEH[S.mode];
+const load=()=>S.cargo.reduce((s,c)=>s+c.kg,0);
+function log(msg,cls=''){S.log.unshift({t:S.t,msg,cls});if(S.log.length>40)S.log.pop();}
+
+function genOffers(){
+ const d=DIST[S.city];const cand=Object.keys(C).filter(k=>k!==S.city&&d[k]>=120&&d[k]<=1500);
+ const n=2+(rnd()<.6?1:0)+(rnd()<.3?1:0);S.offers=[];
+ for(let i=0;i<n;i++){
+  const dest=pick(cand),km=d[dest],kg=pick([60,120,200,280,350,450,600,750,900,1100]);
+  const tight=1.12+rnd()*0.9,H=km/SPEED;
+  const rate=1.0+rnd()*0.35+(tight<1.4?0.28:0)+(kg>650?0.12:0)+(km<400?0.25:0);
+  const pay=Math.round((km*rate+35)/5)*5;
+  const dl=S.t+0.5+H*tight+Math.floor(H/4.5)*0.75+Math.floor(H/9)*11+0.5;
+  S.offers.push({id:S.oid++,dest,km,kg,pay,dl,what:pick(GOODS),tight:tight<1.4});
+ }
+}
+
+function addViol(txt){S.viol.push({txt,fined:false});log('Tacho zapisał: '+txt+'.','warn');}
+
+function legInfo(to){
+ const km=edgeKm(S.city,to);const need=km*V().cons/100;const h=km/SPEED;
+ const cf=C[S.city][3],ct=C[to][3];let toll=(['FR','IT'].includes(cf)?km/2:0)*0.09+(['FR','IT'].includes(ct)?km/2:0)*0.09;
+ for(const c of new Set([cf,ct]))if((c==='AT'||c==='CZ')&&!S.vig[c])toll+=c==='AT'?12.8:11;
+ return{km,need,h,toll};
+}
+
+function drive(to){
+ if(busy||S.over)return;const from=S.city;const L=legInfo(to);
+ if(L.need>S.fuel+0.01){log('Za mało paliwa. Bus nie jedzie na ambicji.','bad');render();return;}
+ let h=L.h*(0.96+rnd()*0.1),extra=0;const msgs=[];
+ // wydarzenie na trasie
+ const key=[from,to].sort().join();
+ if(key==='MIL,MUC'&&rnd()<.45){extra+=1.5+rnd();msgs.push(['Brenner. Kolejka na kilometry, a pod górę jedzie kamper z przyczepą.','warn']);}
+ else if(rnd()<.32){const ev=pick([
+  ()=>{const x=1+rnd()*1.5;extra+=x;return['Korek przed '+C[to][0]+', +'+hm(x)+'. Radio mówi, że stłuczka. Radio zawsze tak mówi.','warn']},
+  ()=>{extra+=.7;return['Zwężenie na 14 km. Robotników: zero. Pachołków: tysiąc.','warn']},
+  ()=>['Klient dzwoni: „Panie, jest pan już?”. Jest pan w połowie trasy.',''],
+  ()=>{extra+=.5;return['Nawigacja znalazła „szybszą trasę” przez trzy wsie i jedną kozę.','warn']},
+  ()=>{S.fatigue=Math.max(0,S.fatigue-10);return['Dobra kawa na MOP-ie. Zdarza się raz na sezon.','good']},
+  ()=>{S.cost+=70;return['Fotoradar. 70 € za 7 km/h. Pamiątka z podróży.','bad']},
+  ()=>{h*=.92;return['Lewy pas pusty, nikt nie blokuje. Podejrzane, ale korzystasz.','good']},
+  ()=>{extra+=.4;return['Ktoś zgubił materac na A4. Wszyscy zwalniają, żeby popatrzeć.','warn']}
+ ]);msgs.push(ev());}
+ // opłaty
+ const cf=C[from][3],ct=C[to][3];
+ for(const c of new Set([cf,ct]))if((c==='AT'||c==='CZ')&&!S.vig[c]){S.vig[c]=1;msgs.push(['Winieta '+c+' kupiona.','']);}
+ S.cost+=L.toll;if(L.toll>0)msgs.push(['Opłaty drogowe: '+eur(L.toll)+'.','']);
+ // zmęczenie
+ const over12=Math.max(0,Math.min(h,S.awake+h-12));
+ S.fatigue=Math.min(130,S.fatigue+h*5.5+over12*7);
+ S.t+=h+extra;S.awake+=h+extra;S.sinceBreak+=h;S.dayDrive+=h;S.fuel-=L.need;S.km+=L.km;
+ // tachograf
+ if(V().tacho){
+  if(S.sinceBreak>4.5+0.05&&!S.vBreak){S.vBreak=true;addViol('jazda ponad 4,5 h bez 45 min przerwy');}
+  if(S.dayDrive>9&&!S.extToday){if(S.ext>0){S.ext--;S.extToday=true;log('Dzień wydłużony do 10 h. Zostało wydłużeń: '+S.ext+'.','warn');}}
+  const lim=S.extToday?10:9;
+  if(S.dayDrive>lim+0.05&&!S.vDay){S.vDay=true;addViol('przekroczony dzienny czas jazdy');}
+  if(S.awake>15&&!S.vRest){S.vRest=true;addViol('brak odpoczynku dobowego w ciągu 24 h');}
+ }
+ // mikrosen
+ if(S.fatigue>70&&rnd()<(S.fatigue-70)/110){
+  if(rnd()<.35){S.cost+=380;S.t+=2;msgs.push(['Mikrosen. Lusterko spotkało barierkę. 380 € i 2 h na ogarnięcie.','bad']);}
+  else msgs.push(['Mikrosen. Obudził cię pas wibracyjny. Tym razem.','bad']);
+ }
+ // kontrola
+ if(rnd()<(ct==='DE'?.16:.09)){
+  const open=S.viol.filter(v=>!v.fined);
+  if(V().tacho&&open.length){let f=0;for(const v of open){v.fined=true;f+=200+Math.round(rnd()*30)*10;}S.cost+=f;
+   msgs.push(['Kontrola '+(ct==='DE'?'BAG':ct==='PL'?'ITD':'drogowa')+'. Pan czytał tachograf jak kryminał. Mandat: '+eur(f)+'.','bad']);S.t+=.75;}
+  else{S.t+=.5;msgs.push([V().tacho?'Kontrola. Tacho czyste. Kontroler zawiedziony, ale uprzejmy.':'Kontrola. „Tachografu nie ma? Aha, 2,5 tony. No to szerokości.”','good']);}
+ }
+ animate(from,to,()=>{
+  S.city=to;S.sel=null;
+  for(const [m,c] of msgs)log(m,c);
+  log('Dojazd: '+C[to][0]+' ('+L.km+' km).');
+  deliver();genOffers();checkEnd();render();
+ });
+}
+
+function deliver(){
+ const here=S.cargo.filter(c=>c.dest===S.city);S.cargo=S.cargo.filter(c=>c.dest!==S.city);
+ for(const c of here){S.t+=.25;const late=S.t-c.dl;let p=c.pay,txt='Dostarczone: '+c.what+'. +'+eur(p)+'.',cls='good';
+  if(late>6){p=Math.round(c.pay*.2);txt='Reklamacja: '+c.what+', spóźnienie '+hm(late)+'. Dostajesz '+eur(p)+' i dużo zdań.';cls='bad';S.late++;}
+  else if(late>0){p=Math.round(c.pay*.5);txt='Spóźnienie '+hm(late)+'. '+c.what+': połowa stawki, '+eur(p)+'.';cls='warn';S.late++;}
+  S.income+=p;S.delivered++;log(txt,cls);}
+}
+
+function take(id){
+ if(busy||S.over)return;const o=S.offers.find(x=>x.id===id);if(!o)return;
+ if(load()+o.kg>V().cap){log('Nie wejdzie. Na pace '+load()+' kg, limit '+V().cap+' kg.','bad');render();return;}
+ S.offers=S.offers.filter(x=>x.id!==id);S.cargo.push(o);S.t+=1/3;S.awake+=1/3;
+ log('Załadunek: '+o.what+' do '+C[o.dest][0]+', '+o.kg+' kg, '+eur(o.pay)+'.');checkEnd();render();
+}
+function brk(){S.t+=.75;S.awake+=.75;S.sinceBreak=0;S.vBreak=false;S.fatigue=Math.max(0,S.fatigue-12);log('Przerwa 45 min. Hot-dog ze stacji, smak jak zawsze.');checkEnd();render();}
+function sleep(h){
+ if(V().tacho&&h===9){if(S.reduced>0)S.reduced--;else addViol('za dużo skróconych odpoczynków');}
+ S.t+=h;S.dayDrive=0;S.sinceBreak=0;S.awake=0;S.fatigue=h===11?0:14;S.extToday=S.vDay=S.vRest=S.vBreak=false;
+ log(h===11?'Odpoczynek 11 h w kabinie. Sąsiad z naczepy chrapie w tonacji D.':'Skrócony odpoczynek 9 h. Głowa wie, że to nie było 11.');
+ genOffers();checkEnd();render();
+}
+function waitH(){S.t+=1;S.awake+=1;genOffers();log('Godzina na giełdzie. Nowe zlecenia, stary kubek kawy.');checkEnd();render();}
+function refuel(){
+ const l=TANK-S.fuel;if(l<1)return;const p=FUEL[C[S.city][3]];S.cost+=l*p;S.fuel=TANK;S.t+=.25;S.awake+=.25;
+ log('Tankowanie '+Math.round(l)+' L po '+p.toFixed(2).replace('.',',')+' €/L: '+eur(l*p)+'.');checkEnd();render();
+}
+
+function checkEnd(){if(S.t>=END&&!S.over){S.over=true;setTimeout(showEnd,400);}}
+
+function animate(a,b,done){
+ const svg=$('map');const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(reduce){done();return;}
+ busy=true;render();const bus=document.createElementNS('http://www.w3.org/2000/svg','rect');
+ bus.setAttribute('class','bus');bus.setAttribute('width','3.4');bus.setAttribute('height','2.2');svg.appendChild(bus);
+ const [x1,y1]=[C[a][1],C[a][2]],[x2,y2]=[C[b][1],C[b][2]];const t0=performance.now(),D=750;
+ const f=now=>{let p=Math.min(1,(now-t0)/D);p=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+  bus.setAttribute('x',x1+(x2-x1)*p-1.7);bus.setAttribute('y',y1+(y2-y1)*p-1.1);
+  if(p<1)requestAnimationFrame(f);else{busy=false;bus.remove();done();}};
+ requestAnimationFrame(f);
+}
+
+function renderMap(){
+ const nb=new Set(ADJ[S.city].map(x=>x[0]));const dests=new Set(S.cargo.map(c=>c.dest));let h='';
+ for(const [a,b,km] of E){const n=(a===S.city&&nb.has(b))||(b===S.city&&nb.has(a));const sel=S.sel&&((a===S.city&&b===S.sel)||(b===S.city&&a===S.sel));
+  const [x1,y1,x2,y2]=[C[a][1],C[a][2],C[b][1],C[b][2]];
+  h+=`<line class="edge${n?' nb':''}${sel?' sel':''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+  if(n)h+=`<text class="km" x="${(x1+x2)/2}" y="${(y1+y2)/2-.8}" text-anchor="middle">${km}</text>`;}
+ for(const k in C){const [name,x,y]=C[k];const cls=['node'];if(k===S.city)cls.push('here');else if(nb.has(k))cls.push('nb');if(dests.has(k))cls.push('dest');
+  const right=x>76,left=x<14;const anchor=right?'end':left?'start':'middle';const tx=right?x-2.4:left?x+2.4:x;const ty=right||left?y+1.1:y-2.6;
+  h+=`<g class="${cls.join(' ')}" data-id="${k}" role="button" aria-label="${name}">
+   <circle cx="${x}" cy="${y}" r="5" fill="transparent"/>
+   ${k===S.city?`<circle class="pulse" cx="${x}" cy="${y}" r="1.6"/>`:''}
+   ${dests.has(k)?`<circle class="ring" cx="${x}" cy="${y}" r="2.8"/>`:''}
+   <circle class="dot" cx="${x}" cy="${y}" r="${k===S.city?1.7:1.3}"/>
+   <text x="${tx}" y="${ty}" text-anchor="${anchor}">${name}</text></g>`;}
+ $('map').innerHTML=h;
+}
+
+function setBar(id,fid,val,max,txt){$(id).textContent=txt;const f=$(fid);const p=Math.min(100,val/max*100);f.style.width=p+'%';f.className='fill'+(p>=100?' bad':p>=75?' warn':'');}
+
+function render(){
+ if(!S)return;
+ $('sTime').textContent=clock(S.t);
+ const net=S.income-S.cost;$('sMoney').textContent=eur(net);$('sMoney').style.color=net<0?'var(--red)':'var(--green)';
+ $('sFuel').textContent=Math.round(S.fuel)+' L';$('sFuel').style.color=S.fuel<20?'var(--red)':'';
+ $('sLoad').textContent=load()+'/'+V().cap+' kg';
+ if(V().tacho){setBar('bBreak','fBreak',S.sinceBreak,4.5,hm(S.sinceBreak)+'/4:30');const lim=S.extToday||S.ext>0?10:9;setBar('bDay','fDay',S.dayDrive,lim,hm(S.dayDrive)+'/'+lim+':00');}
+ else{setBar('bBreak','fBreak',S.sinceBreak,6,hm(S.sinceBreak)+' · bez tacho');setBar('bDay','fDay',S.dayDrive,12,hm(S.dayDrive)+' · głowa');}
+ setBar('bFat','fFat',S.fatigue,100,Math.round(S.fatigue)+'%');
+ renderMap();
+ // trasa
+ const lp=$('legPanel');
+ if(S.sel){const L=legInfo(S.sel);const w=[];
+  if(L.need>S.fuel)w.push('<span class="r">Za mało paliwa na ten odcinek.</span>');
+  if(V().tacho&&S.sinceBreak+L.h>4.5)w.push('Przekroczysz 4,5 h bez przerwy.');
+  if(V().tacho&&S.dayDrive+L.h>(S.extToday||S.ext>0?10:9))w.push('Przekroczysz dzienny limit jazdy.');
+  if(S.fatigue+L.h*5.5>70)w.push('Zmęczenie wejdzie w strefę mikrosnu.');
+  lp.innerHTML=`<h2>Trasa</h2><div class="leg"><p>${C[S.city][0]} → <strong style="color:var(--orange);font-weight:400">${C[S.sel][0]}</strong><br>${L.km} km · ok. ${hm(L.h)} · ${L.need.toFixed(0)} L${L.toll>0?' · opłaty '+eur(L.toll):''}</p>
+   <button class="btn go" id="goBtn" type="button" ${busy||L.need>S.fuel?'disabled':''}>Jedź</button></div>${w.length?'<div class="warns">'+w.join('<br>')+'</div>':''}`;
+  $('goBtn').onclick=()=>drive(S.sel);}
+ else lp.innerHTML=`<h2>Trasa</h2><p class="empty">Stoisz w: ${C[S.city][0]}. Stuknij podświetlone miasto na mapie, żeby wybrać odcinek.</p>`;
+ // giełda
+ $('exTitle').textContent='Giełda: '+C[S.city][0];
+ $('offers').innerHTML=S.offers.length?S.offers.map(o=>{const fit=load()+o.kg<=V().cap;
+  return `<div class="item"><div class="t"><strong>${C[o.dest][0]}</strong> · ${o.what}<div class="m">${o.km} km · ${o.kg} kg · do ${clock(o.dl)}${o.tight?' · ekspres':''}</div></div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="pay">${eur(o.pay)}</span><button class="btn sm" data-take="${o.id}" type="button" ${fit&&!busy?'':'disabled'}>${fit?'Biorę':'Za ciężkie'}</button></div></div>`}).join('')
+  :'<p class="empty">Pusto. Poczekaj godzinę albo jedź dalej.</p>';
+ // ładunek
+ $('cargo').innerHTML=S.cargo.length?S.cargo.map(c=>{const left=c.dl-S.t;const need=DIST[S.city][c.dest]/SPEED;
+  return `<div class="item"><div class="t"><strong>${C[c.dest][0]}</strong> · ${c.what}<div class="m">${c.kg} kg · termin ${clock(c.dl)} · zostało <span class="${left<need?'late':''}">${hm(left)}</span> · ${DIST[S.city][c.dest]} km</div></div><span class="pay">${eur(c.pay)}</span></div>`}).join('')
+  :'<p class="empty">Pusta paka. Paliwo płacisz tak samo.</p>';
+ // akcje
+ const p=FUEL[C[S.city][3]];
+ $('acts').innerHTML=`<button class="btn" data-a="brk" type="button">Przerwa 45 min</button>
+  <button class="btn" data-a="s11" type="button">Nocleg 11 h</button>
+  ${V().tacho?`<button class="btn" data-a="s9" type="button">Skrócony 9 h (${S.reduced})</button>`:`<button class="btn" data-a="s9" type="button">Drzemka 9 h</button>`}
+  <button class="btn" data-a="fuel" type="button" ${TANK-S.fuel<1?'disabled':''}>Tankuj ${p.toFixed(2).replace('.',',')} €/L</button>
+  <button class="btn" data-a="wait" type="button">Czekaj 1 h</button>`;
+ $('acts').querySelectorAll('button').forEach(b=>b.disabled=b.disabled||busy||S.over);
+ $('log').innerHTML=S.log.map(l=>`<div class="${l.cls}"><time>${clock(l.t)}</time>${l.msg}</div>`).join('');
+}
+
+$('map').addEventListener('click',e=>{if(!S||busy||S.over)return;const g=e.target.closest('[data-id]');if(!g)return;const id=g.dataset.id;
+ if(id===S.city){S.sel=null;}else if(edgeKm(S.city,id)!=null){S.sel=id;}else{log('Brak prostej drogi '+C[S.city][0]+' → '+C[id][0]+'. Wybierz podświetlone miasto.','warn');}
+ render();if(S.sel)$('legPanel').scrollIntoView({block:'nearest',behavior:'smooth'});});
+$('offers').addEventListener('click',e=>{const b=e.target.closest('[data-take]');if(b)take(+b.dataset.take);});
+$('acts').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||busy||S.over)return;
+ ({brk,s11:()=>sleep(11),s9:()=>sleep(9),fuel:refuel,wait:waitH})[b.dataset.a]();});
+
+function best(v){try{const k='tacho25t-best-'+S.mode;const o=+localStorage.getItem(k)||null;if(v!=null&&(o===null||v>o)){localStorage.setItem(k,v);return{b:v,rec:true};}return{b:o,rec:false};}catch(e){return{b:null,rec:false};}}
+
+function showStart(){
+ const ov=$('ov');ov.hidden=false;
+ ov.innerHTML=`<div class="card"><div class="copper"></div><h1>TACHO 2,5T<small>TYDZIEŃ EKSPRESU</small></h1>
+ <p>Poniedziałek 06:00, Opole. Do soboty 06:00 masz zarobić jak najwięcej na ekspresach po Europie. Bierzesz zlecenia z giełdy, wybierasz trasę, pilnujesz paliwa, terminów i głowy.</p>
+ <p class="fine">Od 1 lipca 2026 busy powyżej 2,5 t DMC w transporcie międzynarodowym jeżdżą z tachografem i normami 561. Wybierz, czym jedziesz.</p>
+ <div class="choice">
+  <button class="btn" data-m="25" type="button">Bus 2,5 t<span>Paka 650 kg. Bez tachografu. Jedyny limit to twoja głowa, a ona nie wystawia mandatów, tylko rachunki.</span></button>
+  <button class="btn go" data-m="35" type="button">Bus 3,5 t<span>Paka 1150 kg, większe stawki. Tacho: 4,5 h → 45 min, 9 h dziennie (2× 10 h), odpoczynek 11 h. BAG czuwa.</span></button>
+ </div><div class="copper"></div></div>`;
+ ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{S=fresh(b.dataset.m);genOffers();
+  log('Start. '+V().name+', bak pełny, kawa w termosie. Giełda w Opolu otwarta.');ov.hidden=true;ov.innerHTML='';render();});
+}
+function rank(n){return n<1000?'Stażysta na trasie':n<2500?'Busiarz weekendowy':n<4000?'Ekspres z ambicjami':n<5500?'Król giełdy':'Legenda MOP-u';}
+function showEnd(){
+ const net=Math.round(S.income-S.cost);const r=best(net);const fines=S.viol.filter(v=>v.fined).length;const home=S.city==='OPO';
+ const ov=$('ov');ov.hidden=false;
+ ov.innerHTML=`<div class="card"><div class="copper"></div><h2>Sobota, 06:00</h2>
+ <p>${home?'Jesteś w Opolu. Weekend w domu, nie na parkingu.':'Weekend zastaje cię w: '+C[S.city][0]+'. Parking, kebab, '+DIST[S.city].OPO+' km do domu.'}</p>
+ <div class="big" style="color:${net<0?'var(--red)':'var(--green)'}">${eur(net)}</div><div class="rank">${rank(net)}</div>
+ <div class="sum"><span>Przychód</span><span>${eur(S.income)}</span><span>Koszty (paliwo, opłaty, mandaty)</span><span>${eur(S.cost)}</span>
+ <span>Kilometry</span><span>${S.km.toLocaleString('pl-PL')}</span><span>Dostawy / spóźnione</span><span>${S.delivered} / ${S.late}</span>
+ <span>Wpisy w tacho / ukarane</span><span>${S.viol.length} / ${fines}</span><span>Niedowiezione</span><span>${S.cargo.length}</span>
+ <span>Rekord (${V().name})</span><span>${r.b!=null?eur(r.b)+(r.rec?' · nowy':''):'—'}</span></div>
+ <button class="btn go" id="again" type="button">Kolejny tydzień</button><div class="copper"></div></div>`;
+ $('again').onclick=showStart;
+}
+$('newBtn').onclick=()=>{if(!busy)showStart();};
+
+/* ---- chiptune d&b, 172 BPM ---- */
+let ac=null,mg=null,timer=null,step=0,nextT=0,noise=null;const SPB=60/172/4;
+const BASS=[55,55,43.65,43.65,65.41,65.41,49,49];
+const ARP=[[440,523.25,659.25],[349.23,440,523.25],[523.25,659.25,783.99],[392,493.88,587.33]];
+function initAudio(){ac=new (window.AudioContext||window.webkitAudioContext)();mg=ac.createGain();mg.gain.value=.16;mg.connect(ac.destination);
+ noise=ac.createBuffer(1,ac.sampleRate*.3,ac.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=rnd()*2-1;}
+function env(g,t,a,dur){g.gain.setValueAtTime(a,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);}
+function kick(t){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+.12);env(g,t,1,.18);o.connect(g).connect(mg);o.start(t);o.stop(t+.2);}
+function nz(t,hp,a,dur){const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=noise;f.type='highpass';f.frequency.value=hp;env(g,t,a,dur);s.connect(f).connect(g).connect(mg);s.start(t);s.stop(t+dur+.02);}
+function snare(t,a){nz(t,1200,.55*a,.13);const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=190;env(g,t,.3*a,.08);o.connect(g).connect(mg);o.start(t);o.stop(t+.1);}
+function tone(t,f,type,a,dur,lp){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;env(g,t,a,dur);
+ if(lp){const fl=ac.createBiquadFilter();fl.type='lowpass';fl.frequency.value=lp;o.connect(fl).connect(g);}else o.connect(g);g.connect(mg);o.start(t);o.stop(t+dur+.02);}
+function play(s,t){const b=s%16,bar=Math.floor(s/16)%4;
+ if(b===0||b===10)kick(t);
+ if(b===4||b===12)snare(t,1);if(b===7||b===15)snare(t,.3);
+ if(b%2===0)nz(t,7000,.12,.03);
+ if([0,3,6,8,11].includes(b))tone(t,BASS[bar*2+(b>=8?1:0)],'sawtooth',.45,SPB*2.2,380);
+ if(b%2===1)tone(t,ARP[bar][(b>>1)%3]*(b>8?2:1),'square',.05,SPB*.9);}
+function sched(){while(nextT<ac.currentTime+.12){play(step,nextT);nextT+=SPB;step=(step+1)%64;}}
+$('musicBtn').onclick=()=>{try{if(!ac)initAudio();
+ if(timer){clearInterval(timer);timer=null;$('musicBtn').textContent='♪ Muza: off';return;}
+ ac.resume();nextT=ac.currentTime+.05;timer=setInterval(sched,25);$('musicBtn').textContent='♪ Muza: on';}catch(e){$('musicBtn').textContent='♪ brak audio';}};
+
+// stan startowy w tle (pod menu): przykładowa giełda
+S=fresh('35');genOffers();log('Wybierz busa, żeby zacząć.');render();showStart();
+})();
+</script>
