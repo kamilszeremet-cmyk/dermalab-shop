@@ -9,7 +9,7 @@ Bot czyta tę listę, żeby się nie powtarzać.
 | 02 | Złota Taśma | gra treningowa (HTML, canvas) | XAUUSD, ICT: sweep Azji, wypieranie, FVG; delta order flow; wynik w R + dyscyplina | 2026-11-17 |
 | 03 | Poniedziałkowa Wojna | manager/booker (HTML) | wrestling jesień 1996, wojna oglądalności, face/heel, turny, kontuzje, fikcyjne postacie | 2026-11-18 |
 | 04 | Nocne Radio | muzyka generatywna (Web Audio) | liquid d&b + jazz (Rhodes FM, ride, walking bass), progresje ii–V–i, nocna trasa | 2026-11-18 |
+| 05 | Busik Leona | gra dla 4-latka (HTML) | kolory, liczenie do 3, zwierzaki, polski lektor, bez przegranych | 2026-11-18 |
 
 ## Pomysły na kolejne (niewykorzystane)
 - Historia biznesu: interaktywna oś czasu upadków i powrotów firm
-- Gra dla Leona (4 lata): proste, kolorowe, dotykowe

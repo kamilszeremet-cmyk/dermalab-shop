@@ -1,0 +1,221 @@
+<title>Busik Leona</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* layout: one-screen toddler app — star strip, big picture-book scene, giant parcel buttons at thumb height */
+:root{
+  --sky1:#8fd3ff; --sky2:#d9f2ff; --hill:#7ccf6a; --hill2:#5bb84d; --road:#5c5f66; --line:#fff6d6;
+  --bus:#ffc928; --busdark:#e0a400; --ink:#2b2f3a; --white:#ffffff;
+  --red:#ff4d4d; --blue:#3d8bff; --yellow:#ffd23a; --green:#3cc76a; --pad:#fff7e8;
+  --font:"Baloo 2", "Comic Sans MS", system-ui, sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%;background:var(--pad);color:var(--ink)}
+[hidden]{display:none!important}
+body{font-family:var(--font);margin:0;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.app{height:100%;display:flex;flex-direction:column;padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));padding-block:8px;gap:8px;box-sizing:border-box}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
+.stars{display:flex;flex-wrap:wrap;gap:2px;font-size:26px;line-height:1;min-width:0}
+.stars span{animation:pop .5s ease-out}
+.parent{font-family:var(--font);font-size:14px;background:transparent;border:2px solid #e6d9bf;color:#8a7d64;border-radius:12px;padding:6px 12px;min-height:40px;cursor:pointer}
+.scene{position:relative;flex:1 1 auto;min-height:0;border-radius:22px;overflow:hidden;background:linear-gradient(var(--sky1),var(--sky2) 60%)}
+.sun{position:absolute;right:8%;top:8%;width:13vmin;height:13vmin;border-radius:50%;background:#ffe066;box-shadow:0 0 0 2vmin rgba(255,224,102,.35);animation:spin 20s linear infinite}
+.cloud{position:absolute;top:12%;width:22vmin;height:7vmin;background:var(--white);border-radius:6vmin;opacity:.95;animation:cloud 26s linear infinite}
+.cloud::before{content:"";position:absolute;width:10vmin;height:10vmin;background:var(--white);border-radius:50%;left:4vmin;top:-5vmin}
+.hills{position:absolute;left:-10%;right:-10%;bottom:30%;height:28%;background:radial-gradient(ellipse at 20% 100%,var(--hill2) 0 40%,transparent 41%),radial-gradient(ellipse at 70% 100%,var(--hill) 0 45%,transparent 46%)}
+.grass{position:absolute;left:0;right:0;bottom:24%;height:8%;background:var(--hill)}
+.road{position:absolute;left:0;right:0;bottom:0;height:25%;background:var(--road)}
+.dash{position:absolute;left:0;top:46%;height:8%;width:200%;background:repeating-linear-gradient(90deg,var(--line) 0 6vmin,transparent 6vmin 14vmin);animation:road .6s linear infinite}
+.scene.stop .dash,.scene.stop .wheel{animation-play-state:paused}
+.bus{position:absolute;left:4%;bottom:12%;width:min(44%,46vmin);z-index:3;animation:bob .5s ease-in-out infinite alternate;cursor:pointer}
+.scene.stop .bus{animation:none}
+.bus.honk{animation:honk .35s ease-in-out}
+.wheel{transform-box:fill-box;transform-origin:center;animation:spin .6s linear infinite}
+.house{position:absolute;right:4%;bottom:20%;width:min(36%,34vmin);z-index:2;transform:translateX(130vw);display:flex;flex-direction:column;align-items:center}
+.house.in{transition:transform 1.6s cubic-bezier(.2,.8,.3,1);transform:translateX(0)}
+.house.out{transition:transform 1.4s ease-in;transform:translateX(-140vw)}
+.roof{width:0;height:0;border-left:calc(min(36vw,34vmin)/2) solid transparent;border-right:calc(min(36vw,34vmin)/2) solid transparent;border-bottom:12vmin solid var(--roof,#e8574b)}
+.wall{width:86%;aspect-ratio:1.15;background:var(--wall,#fff1c9);border-radius:0 0 10px 10px;position:relative;display:flex;align-items:flex-end;justify-content:center}
+.door{width:40%;height:58%;background:#9b6b3d;border-radius:10vmin 10vmin 0 0;display:flex;align-items:center;justify-content:center}
+.animal{font-size:min(14vmin,13vw);line-height:1;transform:translateY(-6%);transition:transform .2s}
+.animal.happy{animation:jump .6s ease-out 2}
+.animal.no{animation:shake .45s}
+.bubble{position:absolute;bottom:104%;left:50%;transform:translateX(-50%);background:var(--white);border-radius:18px;padding:8px 10px;display:flex;gap:6px;box-shadow:0 4px 0 rgba(0,0,0,.12);z-index:4}
+.bubble::after{content:"";position:absolute;bottom:-10px;left:50%;margin-left:-10px;border:10px solid transparent;border-top-color:var(--white);border-bottom:0}
+.box{width:7vmin;height:7vmin;min-width:26px;min-height:26px;border-radius:6px;border:3px solid rgba(0,0,0,.18);box-sizing:border-box;position:relative}
+.box.done{opacity:.25}
+.box::after{content:"";position:absolute;left:42%;top:0;bottom:0;width:16%;background:rgba(255,255,255,.55)}
+.fly{position:absolute;z-index:5;pointer-events:none}
+.heart{position:absolute;font-size:9vmin;z-index:6;pointer-events:none;animation:up 1.2s ease-out forwards}
+.pad{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr)) auto;gap:10px;min-height:min(24vh,130px)}
+.pk{border:0;border-radius:24px;cursor:pointer;box-shadow:0 7px 0 rgba(0,0,0,.18);position:relative;min-height:84px}
+.pk::before{content:"";position:absolute;left:44%;width:12%;top:0;bottom:0;background:rgba(255,255,255,.5)}
+.pk::after{content:"";position:absolute;top:44%;height:12%;left:0;right:0;background:rgba(255,255,255,.5)}
+.pk:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.pk:focus-visible,.honkbtn:focus-visible,.parent:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+.honkbtn{border:0;border-radius:24px;background:var(--white);font-family:var(--font);font-weight:800;font-size:20px;color:var(--ink);padding:0 14px;box-shadow:0 7px 0 rgba(0,0,0,.12);cursor:pointer;min-width:84px}
+.honkbtn:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.party{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.55);gap:6px;text-align:center}
+.party b{font-size:clamp(34px,10vmin,72px);line-height:1;color:var(--ink);text-shadow:0 4px 0 var(--yellow)}
+.party span{font-size:clamp(40px,14vmin,90px);line-height:1}
+.conf{position:absolute;top:-5%;width:12px;height:18px;border-radius:3px;animation:fall 2.4s linear forwards}
+.start{position:fixed;inset:0;z-index:20;background:var(--pad);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center}
+.start h1{margin:0;font-size:clamp(40px,12vw,76px);line-height:1;font-weight:800;color:var(--ink);text-shadow:0 5px 0 var(--bus)}
+.start p{margin:0;font-size:18px;color:#6d6252;max-width:34ch}
+.go{font-family:var(--font);font-weight:800;font-size:30px;background:var(--green);color:var(--white);border:0;border-radius:30px;padding:16px 46px;box-shadow:0 8px 0 #24994d;cursor:pointer}
+.sheet{position:fixed;inset:auto 0 0 0;z-index:30;background:var(--white);border-radius:22px 22px 0 0;box-shadow:0 -6px 30px rgba(0,0,0,.2);padding:18px max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px;font-size:17px}
+.sheet label{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sheet input[type=text]{font-family:var(--font);font-size:18px;padding:8px 10px;border:2px solid #e6d9bf;border-radius:10px;width:10em;max-width:50vw}
+.sheet input[type=checkbox]{width:26px;height:26px;accent-color:var(--green)}
+.sheet small{color:#8a7d64}
+@keyframes road{to{transform:translateX(-14vmin)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob{to{transform:translateY(-4px)}}
+@keyframes honk{0%,100%{transform:scale(1)}30%{transform:scale(1.07) rotate(-2deg)}60%{transform:scale(1.04) rotate(2deg)}}
+@keyframes jump{0%,100%{transform:translateY(-6%)}40%{transform:translateY(-45%) scale(1.15)}}
+@keyframes shake{0%,100%{transform:translate(0,-6%)}25%{transform:translate(-10%,-6%)}75%{transform:translate(10%,-6%)}}
+@keyframes up{from{transform:translateY(0);opacity:1}to{transform:translateY(-22vmin) scale(1.4);opacity:0}}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes cloud{from{left:-30%}to{left:110%}}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media (max-height:520px){
+  .house{width:min(30%,26vmin);bottom:18%}
+  .roof{border-left-width:calc(min(30vw,26vmin)/2);border-right-width:calc(min(30vw,26vmin)/2);border-bottom-width:8vmin}
+  .animal{font-size:11vmin}
+  .box{width:6vmin;height:6vmin}
+}
+@media (prefers-reduced-motion:reduce){.dash,.wheel,.bus,.cloud,.sun{animation:none!important}}
+</style>
+
+<div class="app">
+  <div class="top"><div class="stars" id="stars" aria-label="Gwiazdki"></div><button class="parent" id="parentBtn" type="button">Dla rodzica</button></div>
+  <div class="scene" id="scene">
+    <div class="sun"></div><div class="cloud"></div><div class="cloud" style="animation-delay:-13s;top:22%;transform:scale(.7)"></div>
+    <div class="hills"></div><div class="grass"></div>
+    <div class="road"><div class="dash"></div></div>
+    <div class="house" id="house"><div class="roof"></div><div class="wall"><div class="door"><span class="animal" id="animal">🐶</span></div></div><div class="bubble" id="bubble"></div></div>
+    <svg class="bus" id="bus" viewBox="0 0 220 120" role="button" aria-label="Busik, kliknij żeby zatrąbić">
+      <rect x="6" y="14" width="200" height="82" rx="20" fill="var(--bus)"/>
+      <rect x="6" y="70" width="200" height="12" fill="var(--busdark)"/>
+      <rect x="22" y="26" width="38" height="30" rx="7" fill="#bfe8ff"/><rect x="68" y="26" width="38" height="30" rx="7" fill="#bfe8ff"/><rect x="114" y="26" width="38" height="30" rx="7" fill="#bfe8ff"/>
+      <rect x="162" y="26" width="34" height="40" rx="7" fill="#bfe8ff"/>
+      <circle cx="132" cy="44" r="9" fill="#ffd6a8"/><circle cx="129" cy="42" r="1.6" fill="var(--ink)"/><circle cx="135" cy="42" r="1.6" fill="var(--ink)"/><path d="M128 47 q4 4 8 0" stroke="var(--ink)" stroke-width="1.6" fill="none"/>
+      <path d="M122 38 q10 -12 20 0" fill="#7a4a22"/>
+      <rect x="200" y="74" width="10" height="8" rx="3" fill="#fff4a8"/>
+      <g class="wheel"><circle cx="52" cy="96" r="18" fill="var(--ink)"/><circle cx="52" cy="96" r="7" fill="#ccc"/><rect x="50" y="80" width="4" height="10" fill="#666"/></g>
+      <g class="wheel"><circle cx="164" cy="96" r="18" fill="var(--ink)"/><circle cx="164" cy="96" r="7" fill="#ccc"/><rect x="162" y="80" width="4" height="10" fill="#666"/></g>
+    </svg>
+  </div>
+  <div class="pad" id="pad"></div>
+</div>
+
+<div class="start" id="start">
+  <h1>Busik <span id="startName">Leona</span></h1>
+  <p>Rozwozimy paczki do zwierzaków. Patrz, jakiego koloru paczkę chce zwierzak, i stuknij ją na dole.</p>
+  <button class="go" id="go" type="button">Jedziemy!</button>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <label for="kidName">Imię dziecka <input id="kidName" type="text" maxlength="14" value="Leon"></label>
+  <label for="voiceOn">Głos lektora <input id="voiceOn" type="checkbox" checked></label>
+  <label for="soundOn">Dźwięki <input id="soundOn" type="checkbox" checked></label>
+  <small>Gra nie ma przegranych ani reklam. Zły kolor to tylko „to nie ta”. Lektor korzysta z polskiego głosu telefonu, jeśli telefon taki ma.</small>
+  <button class="go" id="closeSheet" type="button" style="font-size:22px;padding:12px">Gotowe</button>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);const rnd=Math.random,pick=a=>a[Math.floor(rnd()*a.length)];
+const COLORS=[{k:'red',acc:'czerwoną',pl:'czerwone',gen:'czerwonej',v:'--red'},{k:'blue',acc:'niebieską',pl:'niebieskie',gen:'niebieskiej',v:'--blue'},
+ {k:'yellow',acc:'żółtą',pl:'żółte',gen:'żółtej',v:'--yellow'},{k:'green',acc:'zieloną',pl:'zielone',gen:'zielonej',v:'--green'}];
+const ANIMALS=[['🐶','Piesek'],['🐱','Kotek'],['🐰','Króliczek'],['🐻','Miś'],['🦊','Lisek'],['🐷','Świnka'],['🐸','Żabka'],['🐮','Krówka'],['🐔','Kurka'],['🐵','Małpka'],['🐼','Panda'],['🦁','Lew']];
+const HOUSES=[['#e8574b','#fff1c9'],['#3d8bff','#ffe3ec'],['#8a5cf6','#e8fff0'],['#ff9f1c','#e6f4ff'],['#2bb673','#fff6d6']];
+const NUM=['zero','jeden','dwa','trzy','cztery','pięć','sześć','siedem','osiem','dziewięć','dziesięć','jedenaście','dwanaście','trzynaście','czternaście','piętnaście','szesnaście','siedemnaście','osiemnaście','dziewiętnaście','dwadzieścia'];
+const CNT=['','jedną','dwie','trzy'];
+let S={name:'Leon',voice:true,sound:true,stars:0,deliv:0,want:null,left:0,busy:true,lastAnimal:null};
+try{const o=JSON.parse(localStorage.getItem('busik')||'{}');Object.assign(S,{name:o.name||'Leon',voice:o.voice!==false,sound:o.sound!==false});}catch(e){}
+const save=()=>{try{localStorage.setItem('busik',JSON.stringify({name:S.name,voice:S.voice,sound:S.sound}))}catch(e){}};
+const genName=n=>{const m={Leon:'Leona',Ola:'Oli',Zosia:'Zosi',Kuba:'Kuby',Antek:'Antka',Franek:'Franka',Staś:'Stasia',Tymek:'Tymka'};return m[n]||n;};
+
+/* dźwięk */
+let ac=null;
+function audio(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(ac&&ac.state!=='running')ac.resume();}
+function tone(f,t0,dur,type='sine',vol=.2,f2){if(!ac||!S.sound)return;const t=ac.currentTime+t0,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+dur+.02);}
+const sfx={
+ honk:()=>{tone(392,0,.22,'square',.12);tone(330,.24,.3,'square',.12);},
+ pop:()=>tone(520,0,.15,'triangle',.25,900),
+ yes:()=>[523,659,784,1047].forEach((f,i)=>tone(f,i*.09,.25,'triangle',.18)),
+ no:()=>tone(220,0,.25,'sine',.18,170),
+ party:()=>[523,587,659,784,880,1047,1175,1319].forEach((f,i)=>tone(f,i*.08,.3,'square',.07))};
+let plVoice=null;
+function loadVoice(){try{const vs=speechSynthesis.getVoices();plVoice=vs.find(v=>/^pl/i.test(v.lang))||null;}catch(e){}}
+try{loadVoice();speechSynthesis.onvoiceschanged=loadVoice;}catch(e){}
+function say(txt){if(!S.voice)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang='pl-PL';if(plVoice)u.voice=plVoice;u.rate=.95;u.pitch=1.15;speechSynthesis.speak(u);}catch(e){}}
+
+/* plansza */
+const scene=$('scene'),house=$('house'),animal=$('animal'),bubble=$('bubble'),pad=$('pad');
+function level(){const d=S.deliv;return{colors:d<4?2:d<10?3:4,max:d<5?1:d<12?2:3};}
+function renderPad(){const L=level();pad.style.setProperty('--n',L.colors);
+ pad.innerHTML=COLORS.slice(0,L.colors).map(c=>`<button class="pk" type="button" data-c="${c.k}" style="background:var(${c.v})" aria-label="${c.pl} paczka"></button>`).join('')+`<button class="honkbtn" type="button" id="honk" aria-label="Klakson">Bip!</button>`;
+ $('honk').onclick=honk;}
+function renderStars(){$('stars').innerHTML=Array.from({length:S.stars%20||(S.stars?20:0)},()=>'<span>⭐</span>').join('');}
+function renderBubble(){bubble.innerHTML=Array.from({length:S.want.n},(_,i)=>`<div class="box ${i<S.want.n-S.left?'done':''}" style="background:var(${S.want.c.v})"></div>`).join('');}
+function nextHouse(){
+ const L=level();let a;do{a=pick(ANIMALS)}while(a===S.lastAnimal);S.lastAnimal=a;
+ const c=pick(COLORS.slice(0,L.colors)),n=1+Math.floor(rnd()*L.max);
+ S.want={a,c,n};S.left=n;S.busy=true;
+ const [roof,wall]=pick(HOUSES);house.style.setProperty('--roof',roof);house.style.setProperty('--wall',wall);
+ animal.textContent=a[0];animal.className='animal';bubble.hidden=true;
+ house.style.transition='';house.className='house';void house.offsetWidth;scene.classList.remove('stop');renderPad();
+ setTimeout(()=>{house.className='house in';},700);
+ setTimeout(()=>{scene.classList.add('stop');bubble.hidden=false;renderBubble();S.busy=false;
+  say(`${a[1]} chce ${CNT[n]} ${n===1?c.acc:c.pl} ${n===1?'paczkę':'paczki'}!`);},2350);
+}
+function fly(color,cb){
+ const sr=scene.getBoundingClientRect(),br=$('bus').getBoundingClientRect(),dr=animal.getBoundingClientRect();
+ const el=document.createElement('div');el.className='box fly';el.style.background=`var(${color.v})`;
+ const x0=br.left-sr.left+br.width*.55,y0=br.top-sr.top+br.height*.2,x1=dr.left-sr.left+dr.width*.3,y1=dr.top-sr.top+dr.height*.3;
+ el.style.left=x0+'px';el.style.top=y0+'px';scene.appendChild(el);
+ const dx=x1-x0,dy=y1-y0;
+ const an=el.animate([{transform:'translate(0,0) rotate(0)'},{transform:`translate(${dx*.5}px,${dy-90}px) rotate(180deg)`,offset:.5},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(.6)`}],{duration:520,easing:'ease-in-out'});
+ an.onfinish=()=>{el.remove();cb();};
+}
+function heart(){const sr=scene.getBoundingClientRect(),dr=animal.getBoundingClientRect();const h=document.createElement('div');h.className='heart';h.textContent=pick(['❤️','💛','💚','💙']);
+ h.style.left=(dr.left-sr.left+dr.width*.2)+'px';h.style.top=(dr.top-sr.top-20)+'px';scene.appendChild(h);setTimeout(()=>h.remove(),1300);}
+function tap(k){
+ audio();if(S.busy||!S.want)return;const c=COLORS.find(x=>x.k===k);
+ if(c!==S.want.c){sfx.no();animal.className='animal';void animal.offsetWidth;animal.className='animal no';say(`To nie ta. Szukamy ${S.want.c.gen}!`);return;}
+ S.left--;const done=S.left===0;if(done)S.busy=true;sfx.pop();
+ const cnt=S.want.n-S.left;
+ fly(c,()=>{renderBubble();heart();
+  if(S.want.n>1)say(NUM[cnt]+'!');
+  if(done){sfx.yes();animal.className='animal happy';S.deliv++;S.stars++;renderStars();
+   setTimeout(()=>say(pick(['Dziękuję!','Hura, dziękuję!','Super, dziękuję!'])),S.want.n>1?700:0);
+   setTimeout(()=>{bubble.hidden=true;house.className='house out';scene.classList.remove('stop');
+    if(S.deliv%5===0)setTimeout(party,900);else setTimeout(nextHouse,1500);},1600);}
+ });
+}
+function party(){
+ sfx.party();const p=document.createElement('div');p.className='party';
+ p.innerHTML=`<span>🏆</span><b>Brawo, ${S.name}!</b><b style="font-size:clamp(24px,7vmin,44px)">${S.stars} ⭐</b>`;
+ const cols=['--red','--blue','--yellow','--green'];
+ for(let i=0;i<40;i++){const c=document.createElement('i');c.className='conf';c.style.left=(rnd()*100)+'%';c.style.background=`var(${pick(cols)})`;c.style.animationDelay=(rnd()*.8)+'s';p.appendChild(c);}
+ scene.appendChild(p);say(`Brawo, ${S.name}! Masz już ${S.stars<=20?NUM[S.stars]:S.stars} gwiazdek!`);
+ setTimeout(()=>{p.remove();nextHouse();},3600);
+}
+function honk(){audio();sfx.honk();const b=$('bus');b.classList.remove('honk');void b.getBoundingClientRect();b.classList.add('honk');}
+pad.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b)tap(b.dataset.c);});
+$('bus').addEventListener('click',honk);
+
+/* start i ustawienia */
+function applyName(){$('startName').textContent=genName(S.name);document.title='Busik '+genName(S.name);}
+$('go').onclick=()=>{audio();$('start').hidden=true;say(`Jedziemy! Rozwozimy paczki.`);nextHouse();};
+$('parentBtn').onclick=()=>{$('kidName').value=S.name;$('voiceOn').checked=S.voice;$('soundOn').checked=S.sound;$('sheet').hidden=false;};
+$('closeSheet').onclick=()=>{S.name=($('kidName').value.trim()||'Leon');S.voice=$('voiceOn').checked;S.sound=$('soundOn').checked;save();applyName();$('sheet').hidden=true;};
+applyName();renderPad();renderStars();
+// stan spoczynkowy: dom z pieskiem stoi przy drodze
+S.want={a:ANIMALS[0],c:COLORS[0],n:1};S.left=1;house.className='house in';house.style.transition='none';scene.classList.add('stop');renderBubble();
+})();
+</script>
