@@ -1,0 +1,343 @@
+<title>Poniedziałkowa Wojna</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;600;700&display=swap">
+<style>
+/* layout: 1996 cable-TV broadcast package — chrome title bug, ratings scoreboard, card builder, live results crawl */
+:root{
+  --bg:#12061f; --panel:#1f0d33; --panel2:#2a1245; --line:#4b2a73;
+  --fg:#f3ecff; --dim:#a993c9; --gold:#ffd23a; --red:#ff3b3b; --teal:#2ee6d6;
+  --face:#4fa8ff; --heel:#ff5a7a;
+  --disp:"Anton", Impact, "Arial Narrow Bold", sans-serif;
+  --body:"Barlow Condensed", "Arial Narrow", sans-serif;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--fg)}
+[hidden]{display:none!important}
+body{font-family:var(--body);font-size:18px;line-height:1.3;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 28px;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px),radial-gradient(ellipse at 50% -10%,#3a1360 0,transparent 60%)}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.chrome{font-family:var(--disp);text-transform:uppercase;font-style:italic;letter-spacing:.5px;
+  background:linear-gradient(180deg,#fff 0%,#e9e9f5 38%,#8d8aa8 52%,#fff 60%,#c9c5e0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(3px 3px 0 #000) drop-shadow(0 0 10px rgba(255,210,58,.25))}
+h1{font-size:clamp(34px,9vw,60px);line-height:.95;margin:0}
+.tag{display:inline-block;background:var(--red);color:#fff;font-family:var(--disp);font-size:14px;padding:3px 10px;transform:skew(-12deg);letter-spacing:1px;text-transform:uppercase}
+header{display:flex;flex-direction:column;gap:6px}
+.score{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:stretch;border:2px solid var(--gold);background:#000}
+.score > div{padding:8px 12px;min-width:0}
+.score .us{background:linear-gradient(90deg,#3b0f66,#1f0d33)}
+.score .them{background:linear-gradient(270deg,#5a0f1f,#2a0d18);text-align:right}
+.score .mid{background:var(--gold);color:#000;font-family:var(--disp);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 12px}
+.score .mid b{font-size:12px;font-weight:400;letter-spacing:1px}
+.score .mid span{font-size:26px;line-height:1}
+.score small{display:block;font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score strong{font-family:var(--disp);font-size:32px;font-weight:400;line-height:1.05;font-variant-numeric:tabular-nums}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--dim);font-size:16px}
+.meta b{color:var(--fg);font-weight:600}
+h2{font-family:var(--disp);font-weight:400;font-size:22px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.5px;color:var(--gold);font-style:italic}
+.panel{background:var(--panel);border:1px solid var(--line);padding:12px}
+.slots{display:flex;flex-direction:column;gap:10px}
+.slot{display:grid;grid-template-columns:7.5em minmax(0,1fr) auto minmax(0,1fr);gap:6px 8px;align-items:center;background:var(--panel2);padding:8px;border-left:4px solid var(--line)}
+.slot.main{border-left-color:var(--gold)}
+.slot .lbl{font-family:var(--disp);text-transform:uppercase;font-size:15px;color:var(--dim);letter-spacing:.5px}
+.slot.main .lbl{color:var(--gold)}
+.vs{font-family:var(--disp);color:var(--red);font-style:italic}
+select{font-family:var(--body);font-size:17px;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 6px;width:100%;min-width:0;min-height:42px}
+select:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.win{grid-column:2 / -1;display:flex;gap:6px;flex-wrap:wrap;font-size:15px;color:var(--dim);align-items:center}
+.win button{font-size:14px;padding:4px 10px;min-height:32px}
+.win button.on{background:var(--gold);color:#000;border-color:var(--gold)}
+button{font-family:var(--disp);text-transform:uppercase;letter-spacing:.8px;font-size:16px;cursor:pointer;background:var(--panel2);color:var(--fg);border:1px solid var(--line);padding:10px 16px;min-height:44px}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.air{background:var(--red);border-color:var(--red);color:#fff;font-size:20px;font-style:italic;width:100%;transform:skew(-6deg)}
+button.gold{background:var(--gold);color:#000;border-color:var(--gold)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.row > *{min-width:0}
+.angle{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.hint{font-size:15px;color:var(--dim)}
+.err{color:var(--red);font-size:16px}
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.w{background:var(--panel2);padding:8px 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;border-left:4px solid var(--face)}
+.w.H{border-left-color:var(--heel)}
+.w.out{opacity:.45}
+.w .n{font-weight:700;font-size:19px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w .al{font-family:var(--disp);font-size:13px;padding:1px 6px;align-self:start}
+.w .al.F{background:var(--face);color:#000}.w .al.H{background:var(--heel);color:#000}
+.w .s{grid-column:1 / -1;font-size:15px;color:var(--dim);font-variant-numeric:tabular-nums}
+.w .s b{color:var(--fg);font-weight:600}
+.belt{color:var(--gold)}
+.res{display:flex;flex-direction:column;gap:12px}
+.m{border-left:4px solid var(--line);padding-left:10px}
+.m.main{border-left-color:var(--gold)}
+.m h3{margin:0;font-family:var(--disp);font-weight:400;font-size:19px;text-transform:uppercase;letter-spacing:.3px}
+.m p{margin:2px 0;color:var(--dim)}
+.m .fin{color:var(--fg)}
+.stars{color:var(--gold);font-family:var(--body);font-weight:700;letter-spacing:1px}
+.big{font-family:var(--disp);font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.won{color:var(--teal)}.lost{color:var(--red)}
+.news{display:flex;flex-direction:column;gap:6px}
+.news div{background:var(--panel2);padding:8px 10px;border-left:4px solid var(--teal)}
+.news div.bad{border-left-color:var(--red)}
+.offer{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;background:var(--panel2);padding:8px 10px}
+.hist{display:flex;gap:4px;flex-wrap:wrap}
+.hist span{font-family:var(--disp);font-size:14px;padding:2px 7px;background:var(--panel2)}
+.hist .W{background:var(--teal);color:#000}.hist .L{background:var(--red);color:#fff}
+.overlay{position:fixed;inset:0;background:rgba(18,6,31,.96);display:flex;align-items:center;justify-content:center;z-index:20;overflow:auto;
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.card{max-width:580px;width:100%;background:var(--panel);border:2px solid var(--gold);padding:20px;display:flex;flex-direction:column;gap:12px}
+.card p{margin:0}
+.foot{font-size:14px;color:var(--dim)}
+@media (max-width:560px){
+  .slot{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+  .slot .lbl{grid-column:1 / -1}
+  .win{grid-column:1 / -1}
+  .angle{grid-template-columns:1fr}
+  .score strong{font-size:26px}
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="tag">Na żywo · jesień 1996</span>
+    <h1 class="chrome">Poniedziałkowa Wojna</h1>
+  </header>
+
+  <div class="score" aria-label="Oglądalność">
+    <div class="us"><small>Ty · PRO Wrestling Nitro-Polis</small><strong id="usR">—</strong></div>
+    <div class="mid"><b>TYDZIEŃ</b><span id="wk">1/10</span></div>
+    <div class="them"><small>Rywal · Atlantic Wrestling Alliance</small><strong id="thR">—</strong></div>
+  </div>
+  <div class="meta"><span>Bilans: <b id="rec">0–0</b></span><span>Budżet: <b id="cash">$300k</b></span><span>Mistrz: <b id="champ" class="belt"></b></span><span class="hist" id="hist"></span></div>
+
+  <section class="panel" id="bookPanel">
+    <h2>Rozpiska gali</h2>
+    <div class="slots" id="slots"></div>
+    <div style="height:12px"></div>
+    <h2>Segment</h2>
+    <div class="angle">
+      <select id="angle" aria-label="Segment"></select>
+      <select id="angleWho" aria-label="Kto"></select>
+    </div>
+    <p class="hint" id="angleHint"></p>
+    <p class="err" id="err" hidden></p>
+    <button class="air" id="airBtn" type="button">Nadaj na żywo</button>
+  </section>
+
+  <section class="panel" id="resPanel" hidden>
+    <h2 id="resTitle">Wyniki</h2>
+    <div class="res" id="res"></div>
+  </section>
+
+  <section class="panel" id="newsPanel">
+    <h2>Zaplecze</h2>
+    <div class="news" id="news"></div>
+    <div id="offerBox" style="margin-top:8px"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Szatnia</h2>
+    <div class="roster" id="roster"></div>
+  </section>
+  <p class="foot">Wszystkie postacie, federacje i gale są fikcyjne. Popularność (POP) sprzedaje bilety, warsztat (WRK) robi dobre walki, a zmęczenie robi kontuzje.</p>
+</div>
+
+<div class="overlay" id="ov"></div>
+
+<script>
+(()=>{
+const rnd=Math.random,pick=a=>a[Math.floor(rnd()*a.length)],clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const $=id=>document.getElementById(id);
+const WEEKS=10;
+const BASE=[
+ ['Brick Malone','brawler',78,55,'F'],['Psycho Lenny Voss','hardcore',62,60,'H'],['El Relámpago Azul','luchador',48,88,'F'],
+ ['Johnny Sapphire','showman',70,58,'H'],['Kid Turbo','highflyer',44,82,'F'],['Ivan Kolkhoz','power',50,52,'H'],
+ ['Doc Dupree','technik',55,80,'H'],['Big Tuna Morrison','big',58,40,'F'],['The Ghost of Memphis','mystery',60,50,'H'],
+ ['Tex Ramírez','cowboy',46,62,'F'],['Mister Velvet','showman',66,45,'H'],['Shinji Okabe','strong',40,90,'F']];
+const AGENTS=[['Rocky Delgado','brawler',72,60,'F',150],['Cyberbandit X','highflyer',50,86,'H',70],['The Professor','technik',58,76,'H',90],
+ ['Max Thunderbolt','power',66,50,'F',110],['Bloody Bart Kowalczyk','hardcore',55,64,'H',80],['Daisuke "Typhoon" Mori','strong',45,88,'F',75]];
+const SLOTS=[['Otwarcie',.15],['Midcard',.2],['Górna karta',.25],['Main event',.4]];
+const MOVES={brawler:['prawy sierpowy prosto z baru','suplex przez barierkę','lariat, po którym słychać echo'],
+ hardcore:['krzesło, a potem drugie krzesło','kosz na śmieci jako broń i kapelusz','stół komentatorski, który już nigdy nie będzie stołem'],
+ luchador:['tope suicida w trzeci rząd','hurricanrana z narożnika','salto, którego operator kamery nie nadążył złapać'],
+ showman:['dwie minuty pozowania','strut po ringu i jeden cios','mikrofon w ringu, zanim ktokolwiek chciał'],
+ highflyer:['shooting star press','dropkick z górnej liny','moonsault na zewnątrz ringu'],
+ power:['military press nad głową','powerbomb na matę','niedźwiedzi uścisk na trzy minuty'],
+ technik:['figure-four w środku ringu','seria suplexów niemieckich','dźwignię, której nazwy komentator nie zna'],
+ big:['splash z całym ciężarem','leg drop, ring jęknął','big boot, który bardziej przypominał blokadę drogi'],
+ mystery:['mgła i światło wyłączone na 10 sekund','chokeslam z ciemności','zniknięcie z ringu, ponowne pojawienie się za sędzią'],
+ cowboy:['bulldogging z rozbiegu','lariat z lasso w ręku','rodeo na plecach rywala'],
+ strong:['kopnięcia w klatkę, słychać w ostatnim rzędzie','brainbuster bez litości','headbutt, po którym obaj leżą']};
+const COLOR=['Sędzia leży, znokautowany trzeci raz w tym miesiącu.','Publika skanduje coś, czego telewizja nie może pokazać.','Komentator myli imiona, nikt nie protestuje.','Ktoś w trzecim rzędzie ma tablicę z rozpiską następnego tygodnia. Ciekawe skąd.','Kamera pokazuje wąsatego fana w kowbojskim kapeluszu. Już trzeci raz.','Ring boy zbiera rozrzucone krzesła i ma dość.'];
+const ANGLES={none:['Brak segmentu','Czysto sportowo. Rzadkość w 1996.'],
+ promo:['Promo w ringu','Mikrofon dla gwiazdy. Działa, jeśli ma POP powyżej 60.'],
+ runin:['Wtargnięcie w main evencie','Wbiega w walkę wieczoru i robi zamieszanie. Duży wzrost oglądalności, ryzyko kontuzji, publika szybko się nudzi.'],
+ turn:['Zmiana strony (turn)','Bohater zostaje złoczyńcą albo odwrotnie. Duży skok na tydzień, raz na zawodnika.'],
+ spoiler:['Zdradź wyniki rywala','Rywal nagrywa galę wcześniej. Ty czytasz wyniki na antenie. Działa, ale szatnia się krzywi.']};
+
+let G=null;
+function fresh(){
+ const roster=BASE.map(([n,st,p,w,a],i)=>({id:i,n,st,pop:p,work:w,al:a,fat:10,mor:60,inj:0,turned:false}));
+ return{week:1,roster,champ:0,cash:300,us:[],them:[],last:{},runins:0,card:null,angle:'promo',angleWho:0,news:[{t:'Rywal zapowiada „Klan Zachodu”: grupę przejmującą jego federację od środka. Prasa szaleje.',bad:true}],offer:pick(AGENTS),phase:'book',agents:AGENTS.slice()};
+}
+const W=id=>G.roster.find(w=>w.id===id);
+const avail=()=>G.roster.filter(w=>!w.inj);
+
+function autoCard(){
+ const a=avail().slice().sort((x,y)=>(y.pop+y.work)-(x.pop+x.work));
+ const used=new Set();const card=[];
+ const champ=W(G.champ);
+ for(let s=3;s>=0;s--){
+  let A,B;
+  if(s===3&&champ&&!champ.inj){A=champ;}else A=a.find(w=>!used.has(w.id));
+  if(!A){card[s]={a:null,b:null,win:null};continue;}
+  used.add(A.id);
+  B=a.find(w=>!used.has(w.id)&&w.al!==A.al)||a.find(w=>!used.has(w.id));
+  if(!B){card[s]={a:A.id,b:null,win:A.id};continue;}
+  used.add(B.id);
+  card[s]={a:A.id,b:B.id,win:A.al==='F'?A.id:B.id};
+ }
+ return card;
+}
+
+function stars(v){const f=Math.floor(v),h=v-f>=.5;return '★'.repeat(f)+(h?'½':'')||'DUD';}
+
+function renderBook(){
+ const opts=sel=>'<option value="">—</option>'+G.roster.map(w=>`<option value="${w.id}" ${w.inj?'disabled':''} ${sel===w.id?'selected':''}>${w.n}${w.inj?' (kontuzja)':''}${w.id===G.champ?' 🏆':''}</option>`).join('');
+ $('slots').innerHTML=SLOTS.map(([l],s)=>{const c=G.card[s];const A=W(c.a),B=W(c.b);
+  return `<div class="slot ${s===3?'main':''}"><span class="lbl">${l}${s===3&&(c.a===G.champ||c.b===G.champ)?' · o pas':''}</span>
+  <select data-s="${s}" data-k="a" aria-label="${l}, zawodnik 1">${opts(c.a)}</select><span class="vs">VS</span>
+  <select data-s="${s}" data-k="b" aria-label="${l}, zawodnik 2">${opts(c.b)}</select>
+  <div class="win">Wygrywa: ${[A,B].map(w=>w?`<button type="button" data-s="${s}" data-win="${w.id}" class="${c.win===w.id?'on':''}">${w.n}</button>`:'').join('')}</div></div>`}).join('');
+ $('angle').innerHTML=Object.entries(ANGLES).map(([k,[n]])=>`<option value="${k}" ${G.angle===k?'selected':''}>${n}</option>`).join('');
+ const needWho=G.angle==='promo'||G.angle==='turn'||G.angle==='runin';
+ $('angleWho').hidden=!needWho;
+ if(needWho){const list=G.roster.filter(w=>!w.inj&&!(G.angle==='turn'&&w.turned));
+  if(!list.some(w=>w.id===G.angleWho)&&list.length)G.angleWho=list[0].id;
+  $('angleWho').innerHTML=list.map(w=>`<option value="${w.id}" ${G.angleWho===w.id?'selected':''}>${w.n} (${w.al==='F'?'face':'heel'}, POP ${Math.round(w.pop)})</option>`).join('');}
+ $('angleHint').textContent=ANGLES[G.angle][1]+(G.angle==='runin'&&G.runins>0?' Wtargnięć w tym sezonie: '+G.runins+'.':'');
+ validate();
+}
+function validate(){
+ const ids=G.card.flatMap(c=>[c.a,c.b]);let msg='';
+ if(ids.some(v=>v==null||v===''))msg='Uzupełnij wszystkie walki.';
+ else if(new Set(ids).size!==ids.length)msg='Ten sam zawodnik nie może walczyć dwa razy jednej nocy. Nawet w 1996.';
+ else if(G.angle==='runin'&&ids.includes(G.angleWho)&&[G.card[3].a,G.card[3].b].includes(G.angleWho))msg='Nie można wtargnąć do własnej walki.';
+ $('err').hidden=!msg;$('err').textContent=msg;$('airBtn').disabled=!!msg;return !msg;
+}
+
+function renderRoster(){
+ $('roster').innerHTML=G.roster.slice().sort((a,b)=>b.pop-a.pop).map(w=>`<div class="w ${w.al} ${w.inj?'out':''}"><span class="n">${w.id===G.champ?'<span class="belt">🏆 </span>':''}${w.n}</span><span class="al ${w.al}">${w.al==='F'?'FACE':'HEEL'}</span>
+  <span class="s">POP <b>${Math.round(w.pop)}</b> · WRK <b>${w.work}</b> · zmęcz. <b>${Math.round(w.fat)}</b> · morale <b>${Math.round(w.mor)}</b>${w.inj?' · <span style="color:var(--red)">kontuzja '+w.inj+' tyg.</span>':''}</span></div>`).join('');
+}
+function renderTop(){
+ const u=G.us.length,wins=G.us.filter((v,i)=>v>G.them[i]).length;
+ $('wk').textContent=Math.min(G.week,WEEKS)+'/'+WEEKS;$('usR').textContent=u?G.us[u-1].toFixed(1):'—';$('thR').textContent=u?G.them[u-1].toFixed(1):'—';
+ $('rec').textContent=wins+'–'+(u-wins);$('cash').textContent='$'+Math.round(G.cash)+'k';$('champ').textContent=W(G.champ)?.n||'wakat';
+ $('hist').innerHTML=G.us.map((v,i)=>`<span class="${v>G.them[i]?'W':'L'}">${i+1}</span>`).join('');
+}
+function renderNews(){
+ $('news').innerHTML=G.news.length?G.news.map(n=>`<div class="${n.bad?'bad':''}">${n.t}</div>`).join(''):'<div>Cisza na zapleczu. Podejrzane.</div>';
+ const o=G.offer;
+ $('offerBox').innerHTML=o?`<div class="offer"><span><b>Wolny agent:</b> ${o[0]} (${o[4]==='F'?'face':'heel'}, POP ${o[2]}, WRK ${o[3]}), $${o[5]}k</span>
+  <button class="gold" id="signBtn" type="button" ${G.cash<o[5]||G.phase!=='book'?'disabled':''}>Podpisz</button></div>`:'';
+ if(o&&$('signBtn'))$('signBtn').onclick=sign;
+}
+function render(){renderTop();renderRoster();renderNews();if(G.phase==='book'){$('bookPanel').hidden=false;renderBook();}else $('bookPanel').hidden=true;}
+
+function sign(){const o=G.offer;if(!o||G.cash<o[5])return;G.cash-=o[5];
+ G.roster.push({id:G.roster.length+100,n:o[0],st:o[1],pop:o[2],work:o[3],al:o[4],fat:0,mor:80,inj:0,turned:false});
+ G.agents=G.agents.filter(a=>a[0]!==o[0]);G.offer=null;G.news.unshift({t:o[0]+' podpisuje kontrakt. Konferencja prasowa w hotelowym lobby, dwóch dziennikarzy, jeden fotograf.'});render();}
+
+/* ---- gala ---- */
+function air(){
+ if(!validate())return;
+ const out=[],news=[];let q=0;
+ const ids=new Set(G.card.flatMap(c=>[c.a,c.b]));
+ // segment
+ let angleBonus=0,angleTxt='';const who=W(G.angleWho);
+ if(G.angle==='promo'){angleBonus=who.pop>60?.18:.05;who.pop+=who.pop>60?1:3;angleTxt=`${who.n} bierze mikrofon. ${who.pop>60?'Arena odpowiada każdym zdaniem.':'Arena idzie po popcorn.'}`;}
+ if(G.angle==='runin'){G.runins++;angleBonus=Math.max(.05,.38-G.runins*.07);who.fat+=15;angleTxt=`${who.n} wbiega w main event! ${G.runins>2?'Publika ziewa, widziała to w zeszłym tygodniu.':'Hala eksploduje, sędzia ucieka pod ring.'}`;}
+ if(G.angle==='turn'){angleBonus=.5;who.turned=true;who.al=who.al==='F'?'H':'F';who.pop=clamp(who.pop+8,0,99);
+  angleTxt=who.al==='H'?`${who.n} odwraca się od fanów i atakuje partnera. Kubki z piwem lecą na ring. Telefony w biurze dzwonią do rana.`:`${who.n} staje w obronie fanów. Hala, która go nienawidziła, nagle śpiewa jego imię.`;}
+ if(G.angle==='spoiler'){angleBonus=.25;G.roster.forEach(w=>w.mor-=4);angleTxt='Komentator czyta wyniki taśmowej gali rywala. Kilkaset tysięcy pilotów zostaje na naszym kanale. Szatnia uważa, że to poniżej pasa.';}
+ // walki
+ G.card.forEach((c,s)=>{
+  const A=W(c.a),B=W(c.b),wt=SLOTS[s][1];const key=[c.a,c.b].sort().join('-');
+  let st=(A.work+B.work)/2*.045+(A.al!==B.al?.5:-.3)-((A.fat+B.fat)/2)*.012+(rnd()-.5);
+  const rep=G.last[key]&&G.week-G.last[key]<=2;if(rep)st-=.6;
+  const title=s===3&&(c.a===G.champ||c.b===G.champ);if(title)st+=.25;
+  if(s===3&&G.angle==='runin')st-=.25;
+  st=Math.round(clamp(st,.5,5)*2)/2;
+  const pop=(A.pop+B.pop)/2;q+=wt*(st*12+pop*.6);
+  const Wn=W(c.win),L=c.win===c.a?B:A;
+  Wn.pop=clamp(Wn.pop+(s===3?4:2)+(st>=4?1:0),0,99);L.pop=clamp(L.pop-(s===3?1:2),0,99);Wn.mor+=4;L.mor-=3;
+  [A,B].forEach(w=>{w.fat+=s===3?25:15;});
+  G.last[key]=G.week;
+  let lines=[`${A.n}: ${pick(MOVES[A.st])}.`,`${B.n}: ${pick(MOVES[B.st])}.`];if(rnd()<.45)lines.push(pick(COLOR));
+  if(rep)lines.push('Ten sam pojedynek po raz kolejny. Publika ogląda i jednocześnie liczy płytki na suficie.');
+  let fin=`${Wn.n} wygrywa.`;
+  if(title&&c.win!==G.champ){G.champ=c.win;fin=`NOWY MISTRZ! ${Wn.n} zdobywa pas. Konfetti, którego nikt nie zamówił.`;news.push({t:Wn.n+' nowym mistrzem. Merchandise z poprzednim mistrzem idzie do koszy na promocji.'});}
+  else if(title)fin=`${Wn.n} broni pasa.`;
+  if(Wn.al==='H'&&rnd()<.5)fin+=' Oczywiście z nogami na linach.';
+  out.push({l:SLOTS[s][0],main:s===3,A,B,st,lines,fin,title});
+ });
+ // oglądalność
+ const prev=G.us.length?G.us[G.us.length-1]:3.6;
+ let us=1.45+q/30+angleBonus+(prev-3.8)*.15+(rnd()-.5)*.25;
+ let them=3.72+G.week*.09+(rnd()-.5)*.55-(G.angle==='spoiler'?.12:0);
+ us=Math.round(us*10)/10;them=Math.round(them*10)/10;if(us===them)us+=.1;
+ G.us.push(us);G.them.push(them);G.cash+=Math.round(us*14);
+ // po gali: zmęczenie, morale, kontuzje, odejścia
+ G.roster.forEach(w=>{
+  if(!ids.has(w.id)&&!w.inj){w.mor-=3;}
+  if(w.inj){w.inj--;w.fat=0;}else w.fat=clamp(w.fat-(ids.has(w.id)?12:25),0,100);
+  w.mor=clamp(w.mor,0,100);
+ });
+ G.roster.forEach(w=>{if(!w.inj&&w.fat>65&&rnd()<.3){w.inj=1+Math.floor(rnd()*3);news.push({t:`${w.n}: kontuzja kolana, pauza ${w.inj} tyg. Lekarz federacji radził lód. Dwa tygodnie temu też radził lód.`,bad:true});
+  if(w.id===G.champ)news.push({t:'Mistrz kontuzjowany. Pas zostaje przy nim, booker zostaje z problemem.',bad:true});}});
+ const unhappy=G.roster.filter(w=>w.mor<30&&w.id!==G.champ);
+ if(unhappy.length&&rnd()<.5){const j=pick(unhappy);G.roster=G.roster.filter(w=>w.id!==j.id);news.push({t:`${j.n} przechodzi do rywala i dołącza do Klanu Zachodu. W piątek był jeszcze na twoim plakacie.`,bad:true});}
+ if(rnd()<.35)news.push(pick([{t:'Gazetka branżowa daje twojemu main eventowi „przyzwoite” cztery gwiazdki. Napisane czcionką Comic Sans.'},{t:'Rywal wysyła limuzynę pod twoją halę. Pusta. Chodzi o zdjęcia.',bad:true},{t:'Sponsor napoju energetycznego chce więcej wybuchów. Budżet na wybuchy: zero.'},{t:'Fan club z Ohio przysyła ręcznie robiony pas. Wygląda lepiej niż oryginał.'}]));
+ G.news=news.length?news:[];
+ if(!G.offer&&G.agents.length&&rnd()<.6)G.offer=pick(G.agents);
+ G.phase='result';
+ showRes(out,us,them,angleTxt);
+}
+function showRes(out,us,them,angleTxt){
+ const won=us>them;
+ $('resTitle').textContent='Wyniki · tydzień '+G.week;
+ $('res').innerHTML=(angleTxt?`<div class="m"><h3>Segment</h3><p class="fin">${angleTxt}</p></div>`:'')+out.map(m=>`<div class="m ${m.main?'main':''}"><h3>${m.l}${m.title?' · o pas':''}: ${m.A.n} vs ${m.B.n} <span class="stars">${stars(m.st)}</span></h3>${m.lines.map(l=>`<p>${l}</p>`).join('')}<p class="fin">${m.fin}</p></div>`).join('')+
+  `<div class="row" style="justify-content:space-between"><div><div class="hint">Oglądalność</div><div class="big ${won?'won':'lost'}">${us.toFixed(1)} : ${them.toFixed(1)}</div><div>${won?'Wygrywasz poniedziałek.':'Rywal wygrywa poniedziałek.'}</div></div>
+  <button class="gold" id="nextBtn" type="button">${G.week>=WEEKS?'Koniec sezonu':'Następny tydzień'}</button></div>`;
+ $('resPanel').hidden=false;render();$('resPanel').scrollIntoView({behavior:'smooth',block:'start'});
+ $('nextBtn').onclick=()=>{if(G.week>=WEEKS){showEnd();return;}G.week++;G.phase='book';G.card=autoCard();$('resPanel').hidden=true;render();scrollTo({top:0,behavior:'smooth'});};
+}
+function showEnd(){
+ const wins=G.us.filter((v,i)=>v>G.them[i]).length;
+ const verdict=wins>=8?'Wojna wygrana. Rywal zwalnia bookera i zatrudnia twojego kierowcę.':wins>=6?'Zwycięstwo na punkty. Prasa pisze o „nowej erze”, jak co roku.':wins>=4?'Remis z przewagą rywala. Zarząd prosi o „więcej wybuchów”.':'Klan Zachodu przejął poniedziałki. Twój gabinet zamienią na magazyn krzeseł.';
+ let best=null;try{best=localStorage.getItem('pw-best');if(best===null||wins>+best)localStorage.setItem('pw-best',wins);}catch(e){}
+ const ov=$('ov');ov.hidden=false;
+ ov.innerHTML=`<div class="card"><span class="tag">Koniec sezonu</span><div class="big ${wins>=6?'won':'lost'}">${wins} : ${WEEKS-wins}</div><p>${verdict}</p>
+ <p class="hint">Mistrz na koniec: ${W(G.champ)?.n||'wakat'} · budżet $${Math.round(G.cash)}k · poprzedni rekord: ${best!==null?best+' wygranych':'—'}</p>
+ <button class="gold" id="again" type="button">Nowy sezon</button></div>`;
+ $('again').onclick=start;
+}
+function start(){G=fresh();G.card=autoCard();$('ov').hidden=true;$('resPanel').hidden=true;render();}
+function intro(){const ov=$('ov');ov.hidden=false;
+ ov.innerHTML=`<div class="card"><span class="tag">Jesień 1996</span><h1 class="chrome" style="font-size:clamp(30px,8vw,46px)">Poniedziałkowa Wojna</h1>
+ <p>Jesteś bookerem federacji Nitro-Polis. Co poniedziałek o 21:00 nadajesz galę na żywo przeciwko Atlantic Wrestling Alliance. Kto ma wyższą oglądalność, wygrywa tydzień. Sezon trwa 10 tygodni.</p>
+ <p class="hint">Układasz 4 walki, wybierasz zwycięzców i jeden segment. Face kontra heel robi lepsze walki. Zmęczeni zawodnicy łapią kontuzje, a pomijani tracą morale i mogą odejść do rywala. Rywal co tydzień rośnie, bo buduje swój Klan Zachodu.</p>
+ <button class="gold" id="go" type="button">Wejdź za kulisy</button></div>`;
+ $('go').onclick=start;}
+
+$('slots').addEventListener('change',e=>{const t=e.target;if(!t.dataset.k)return;const c=G.card[+t.dataset.s];c[t.dataset.k]=t.value===''?null:+t.value;
+ if(c.win!==c.a&&c.win!==c.b)c.win=c.a??c.b;renderBook();});
+$('slots').addEventListener('click',e=>{const b=e.target.closest('[data-win]');if(!b)return;G.card[+b.dataset.s].win=+b.dataset.win;renderBook();});
+$('angle').addEventListener('change',e=>{G.angle=e.target.value;renderBook();});
+$('angleWho').addEventListener('change',e=>{G.angleWho=+e.target.value;validate();});
+$('airBtn').onclick=air;
+
+G=fresh();G.card=autoCard();render();intro();
+})();
+</script>
