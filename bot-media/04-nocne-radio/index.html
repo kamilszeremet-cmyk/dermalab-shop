@@ -95,9 +95,21 @@ const SIGNS=[['A4','Dresden'],['A4','Wrocław'],['E40','Liège'],['A2','Hannover
 let ac=null,master,musicBus,drumBus,rhodesBus,rev,dly,lpf,noise,playing=false,timer=null,step=0,nextT=0,startT=0,wake=null;
 let P={mix:.7,energy:.55,bpm:172,vol:.8};
 let song=null;
+const T_PL=['Brenner','Świecko','Zjazd 47','Lipsk','Calais','Kolonia','Gotard','Obwodnica Wiednia','Pusty MOP','Ostatnia stacja','Bramka w Görlitz','Rondo w Brnie'];
+const T_H=['1:10','2:40','3:15','4:05','5:20','23:50','0:30'];
+const T_N=['Mgła','Deszcz','Kawa z automatu','Rhodes','Sub','Cisza','Światła','Nocny rozładunek','Szron','Radio CB'];
+const T_L=['A4','A2','E40','A9','rezerwie','luzie','pustym pasie','autostradzie','granicy','obwodnicy','postoju'];
+const T_G=['Opola','Calais','Lyonu','Mediolanu','Hamburga','Wiednia','domu','rozładunku','Antwerpii','Pragi'];
+const T_C=['Calais','Mediolan','Hamburg','Rotterdam','Opole','Lyon','Brenner','Zeebrugge'];
+const usedTitles=new Set();
+function newTitle(){
+ const gens=[()=>pick(TITLES),()=>pick(T_PL)+' o '+pick(T_H),()=>pick(T_N)+' na '+pick(T_L),()=>(10+Math.floor(rnd()*60)*10)+' km do '+pick(T_G),()=>'Kierunek: '+pick(T_C)];
+ for(let i=0;i<80;i++){const t=pick(gens)();if(!usedTitles.has(t)){usedTitles.add(t);return t;}}
+ usedTitles.clear();return pick(TITLES);
+}
 function newSong(){
  const key=Math.floor(rnd()*12);
- song={key,prog:pick(PROGS),title:pick(TITLES),bar0:Math.floor(step/16)};
+ song={key,prog:pick(PROGS),title:newTitle(),bar0:Math.floor(step/16)};
  $('track').textContent=song.title;$('key').textContent=KEYPL[NOTE[key]];
 }
 function initAudio(){
