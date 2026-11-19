@@ -10,6 +10,6 @@ Bot czyta tę listę, żeby się nie powtarzać.
 | 03 | Poniedziałkowa Wojna | manager/booker (HTML) | wrestling jesień 1996, wojna oglądalności, face/heel, turny, kontuzje, fikcyjne postacie | 2026-11-18 |
 | 04 | Nocne Radio | muzyka generatywna (Web Audio) | liquid d&b + jazz (Rhodes FM, ride, walking bass), progresje ii–V–i, nocna trasa | 2026-11-18 |
 | 05 | Busik Leona | gra dla 4-latka (HTML) | kolory, liczenie do 3, zwierzaki, polski lektor, bez przegranych | 2026-11-18 |
+| 06 | Gabinet Prezesa | interaktywna historia biznesu (HTML) | 9 kryzysów: Nintendo, Kodak, Atari, Harley, Commodore, Apple, Blockbuster, LEGO, Marvel | 2026-11-19 |
 
 ## Pomysły na kolejne (niewykorzystane)
-- Historia biznesu: interaktywna oś czasu upadków i powrotów firm

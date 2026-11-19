@@ -1,0 +1,186 @@
+<title>Gabinet Prezesa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Special+Elite&display=swap">
+<style>
+/* layout: a stack of case files on a desk — progress tabs, one folder open at a time, stamp on reveal */
+:root{
+  --desk:#2d2620; --kraft:#d9bf8f; --kraft2:#cdb07c; --paper:#fbf6ea; --ink:#231d17; --dim:#6b5d4b;
+  --stamp:#b3261e; --ok:#1f6b45; --line:#b89c6a;
+  --disp:"Archivo Black", Impact, sans-serif;
+  --body:"Source Serif 4", Georgia, serif;
+  --type:"Special Elite", "Courier New", monospace;
+  color-scheme:light;
+}
+html,body{background:var(--desk);color:var(--ink)}
+[hidden]{display:none!important}
+body{font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 32px;
+  background-image:radial-gradient(ellipse at 30% 0,#3d332a 0,transparent 60%)}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{color:var(--paper);display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--disp);font-size:clamp(30px,8vw,48px);line-height:.95;margin:0;letter-spacing:-.5px;text-transform:uppercase}
+.sub{font-family:var(--type);color:var(--kraft);font-size:14px}
+.score{font-family:var(--type);color:var(--kraft);font-size:14px;text-align:right}
+.score b{display:block;font-family:var(--disp);font-size:28px;color:var(--paper);font-weight:400;line-height:1}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs span{font-family:var(--type);font-size:12px;padding:4px 8px 3px;background:var(--kraft2);color:var(--dim);border-radius:6px 6px 0 0;opacity:.6}
+.tabs span.cur{background:var(--kraft);color:var(--ink);opacity:1}
+.tabs span.hit{background:#a7c7a9;opacity:.9;color:var(--ink)}
+.tabs span.miss{background:#d9a29b;opacity:.9;color:var(--ink)}
+.folder{background:var(--kraft);border-radius:0 10px 10px 10px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.sheet{background:var(--paper);padding:22px 20px 20px;position:relative;box-shadow:0 1px 0 var(--line),0 2px 6px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.meta{font-family:var(--type);font-size:14px;color:var(--dim);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h2{font-family:var(--disp);font-weight:400;font-size:clamp(28px,7vw,40px);line-height:1;margin:0;text-transform:uppercase;letter-spacing:-.3px;text-wrap:balance}
+h3{font-family:var(--type);font-weight:400;font-size:14px;margin:0;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+.q{font-weight:600;font-size:19px;margin:0}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font-family:var(--body);font-size:16px;text-align:left;background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:10px 12px 10px 42px;cursor:pointer;position:relative;line-height:1.35;min-height:48px}
+.opt::before{content:attr(data-l);position:absolute;left:12px;top:9px;font-family:var(--disp);font-size:16px}
+.opt:hover:not(:disabled){background:rgba(35,29,23,.06)}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--stamp);outline-offset:2px}
+.opt:disabled{cursor:default;opacity:.55}
+.opt.real{opacity:1;border-color:var(--ok);border-width:2.5px;background:rgba(31,107,69,.07)}
+.opt.mine{opacity:1}
+.opt.mine:not(.real){border-color:var(--stamp);background:rgba(179,38,30,.06)}
+.opt .tag{display:block;font-family:var(--type);font-size:12px;margin-top:4px}
+.opt.real .tag{color:var(--ok)}.opt.mine:not(.real) .tag{color:var(--stamp)}
+.reveal{display:flex;flex-direction:column;gap:12px;border-top:2px dashed var(--line);padding-top:14px}
+.reveal p{margin:0;max-width:66ch}
+.lesson{background:#f1e7cf;padding:10px 12px;border-left:4px solid var(--ink)}
+.lesson b{font-family:var(--type);font-weight:400;font-size:13px;text-transform:uppercase;letter-spacing:.08em;display:block;color:var(--dim)}
+.stampbox{position:absolute;right:14px;top:56px;pointer-events:none}
+.stamp{font-family:var(--disp);font-size:clamp(20px,5.5vw,30px);color:var(--stamp);border:4px solid var(--stamp);padding:4px 12px;transform:rotate(-11deg);opacity:.82;text-transform:uppercase;letter-spacing:1px;mix-blend-mode:multiply;animation:thud .35s ease-out}
+.stamp.ok{color:var(--ok);border-color:var(--ok)}
+@keyframes thud{from{transform:rotate(-11deg) scale(2.2);opacity:0}to{transform:rotate(-11deg) scale(1);opacity:.82}}
+.btn{font-family:var(--disp);font-size:16px;text-transform:uppercase;letter-spacing:.5px;background:var(--ink);color:var(--paper);border:0;padding:12px 20px;cursor:pointer;min-height:48px;align-self:flex-start}
+.final .row{display:grid;grid-template-columns:4.2em minmax(0,1fr) auto;gap:8px;padding:6px 0;border-bottom:1px dotted var(--line);align-items:baseline}
+.final .row b{font-family:var(--type);font-weight:400}
+.final .row i{font-style:normal;font-family:var(--type);font-size:13px}
+.big{font-family:var(--disp);font-size:56px;line-height:1}
+.foot{font-family:var(--type);font-size:12px;color:var(--kraft);opacity:.8}
+@media (prefers-reduced-motion:reduce){.stamp{animation:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div><h1>Gabinet Prezesa</h1><div class="sub">9 teczek · 9 kryzysów · jedna decyzja w każdej</div></div>
+    <div class="score">zgodnie z historią<b id="score">0/0</b></div>
+  </header>
+  <div class="tabs" id="tabs"></div>
+  <div class="folder"><div class="sheet" id="sheet"></div></div>
+  <p class="foot">Fakty według ogólnodostępnych źródeł historycznych. Liczby zaokrąglone. Wybór „jak w historii” nie znaczy „najlepszy”, tylko „tak było”.</p>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const CASES=[
+{y:'lata 60.',co:'Nintendo',where:'Kioto, Japonia',
+ sit:['Firma od 1889 roku robi karty do gry hanafuda.','Boom na karty minął, rynek jest nasycony, akcje lecą w dół.','Młody prezes Hiroshi Yamauchi musi znaleźć nowy biznes.'],
+ q:'Co robisz z rodzinną firmą od kart?',
+ o:['Zostaję przy kartach i tnę koszty, aż rynek wróci.','Próbuję wszystkiego naraz: taksówki, hotele na godziny, ryż instant, zabawki.','Sprzedaję firmę większemu wydawcy, póki jest coś warta.'],real:1,
+ what:'Yamauchi próbował wszystkiego. Firma taksówkowa, hotele na godziny i ryż instant w większości się nie udały. Zadziałały zabawki: wysuwane ramię „Ultra Hand” (1966) inżyniera Gunpei Yokoi sprzedało się świetnie.',
+ then:'Z zabawek przyszły elektroniczne gry, potem Game & Watch, NES i Game Boy. Karty Nintendo robi do dziś.',
+ lesson:'Szukaj nowego biznesu szeroko, ale szybko zabijaj to, co nie działa. Jedna trafiona próba wystarczy, jeśli przetrwasz pięć nietrafionych.'},
+{y:'1975',co:'Kodak',where:'Rochester, USA',
+ sit:['Kodak zarabia krocie na filmie fotograficznym i jego wywoływaniu.','Inżynier Steve Sasson buduje pierwszy prototyp aparatu cyfrowego: 0,01 megapiksela, zapis na kasetę trwa 23 sekundy.','Cyfra mogłaby kiedyś zastąpić film, czyli główne źródło zysku.'],
+ q:'Co robisz z prototypem?',
+ o:['Wchodzę w cyfrę na całość, zanim zrobi to konkurencja.','Patentuję, ale nie forsuję, bo to zagraża filmowi.','Sprzedaję technologię innej firmie elektronicznej.'],real:1,
+ what:'Kodak opatentował technologię i latami rozwijał cyfrę, ale ostrożnie, żeby nie podkopać filmu. Biznes nadal kręcił się wokół filmu i odbitek.',
+ then:'Gdy cyfrowe aparaty i smartfony zabrały film, Kodak był spóźniony. W styczniu 2012 złożył wniosek o ochronę przed wierzycielami (Chapter 11).',
+ lesson:'Jeśli nie zjesz własnego najlepszego produktu, zrobi to ktoś inny. Busiarze z telefonem i AI nie poczekają, aż stare giełdy się dostosują.'},
+{y:'1982',co:'Atari',where:'Sunnyvale, USA',
+ sit:['Atari 2600 to król konsol. Firma płaci ogromną sumę za licencję na grę do filmu „E.T.”.','Do świąt zostało około pięciu, sześciu tygodni na całą grę.','Produkcja ma iść w miliony kartridży.'],
+ q:'Co robisz z grą E.T.?',
+ o:['Wydaję na święta, termin jest święty.','Przesuwam premierę na wiosnę i robię porządną grę.','Odsprzedaję licencję i nie ryzykuję.'],real:0,
+ what:'Gra powstała w kilka tygodni i trafiła do sklepów na święta 1982. Sprzedała się, ale mniej, niż wyprodukowano, a gracze ją zjechali.',
+ then:'Nadmiar kartridży i słabe gry dołożyły się do krachu rynku gier w USA w 1983. Atari zakopało niesprzedany towar na wysypisku w Alamogordo; w 2014 roku wykopano tam kartridże E.T.',
+ lesson:'Termin ustawiony przez marketing, a nie przez produkt, zwykle kosztuje najwięcej. Lepiej wydać później coś, co działa.'},
+{y:'1983',co:'Harley-Davidson',where:'Milwaukee, USA',
+ sit:['Japońskie motocykle są tańsze i solidniejsze. Harley ma problemy z jakością.','Kadra kierownicza właśnie wykupiła firmę od koncernu AMF (1981).','Udział w rynku ciężkich motocykli spada.'],
+ q:'Jak ratujesz Harleya?',
+ o:['Proszę rząd o czasowe cła na duże japońskie motocykle i w tym czasie naprawiam jakość.','Obniżam ceny, żeby walczyć z Japończykami ceną.','Szukam japońskiego partnera i robię motocykle razem.'],real:0,
+ what:'Harley poprosił o ochronę i w 1983 USA nałożyły na kilka lat wysokie cła na duże importowane motocykle. Firma w tym czasie poprawiała jakość i produkcję.',
+ then:'W 1987 Harley sam poprosił o zniesienie ceł rok przed terminem, bo stanął na nogi. Marka przetrwała jako symbol.',
+ lesson:'Ochrona daje czas, nie przewagę. Liczy się, co zrobisz w tym czasie.'},
+{y:'1994',co:'Commodore',where:'West Chester, USA / Bahamy',
+ sit:['Amiga CD32 dobrze sprzedaje się w Europie.','W USA przegrany spór patentowy blokuje towar. Firma nie ma gotówki na spłatę.','Wcześniejsze modele sprzedawały się słabo, zarząd od lat przepalał pieniądze.'],
+ q:'Co robisz z twórcą Amigi?',
+ o:['Sprzedaję licencję na Amigę i zostaję przy produkcji w Europie.','Szukam inwestora i tnę wszystko poza CD32 i A1200.','Ogłaszam upadłość i likwiduję spółkę.'],real:2,
+ what:'29 kwietnia 1994 Commodore International ogłosił dobrowolną likwidację na Bahamach, gdzie był zarejestrowany. Fabryki stanęły, a Amiga została bez właściciela.',
+ then:'Markę i technologię kupiło w 1995 niemieckie Escom, które samo upadło w 1996. Amiga żyła dalej głównie dzięki fanom.',
+ lesson:'Świetny produkt nie uratuje firmy bez gotówki i z zablokowanym głównym rynkiem. Rezerwa finansowa to też funkcja produktu.'},
+{y:'1997',co:'Apple',where:'Cupertino, USA',
+ sit:['Steve Jobs wraca do firmy, którą założył.','Apple sprzedaje dziesiątki modeli Maców, licencjonuje system innym producentom i traci pieniądze.','Jobs mówił później, że firma była około 90 dni od niewypłacalności.'],
+ q:'Jak ratujesz Apple?',
+ o:['Tnę ofertę do czterech produktów, kończę z klonami i biorę pieniądze od największego rywala.','Rozszerzam licencjonowanie Mac OS, żeby system był wszędzie.','Szukam kupca na całą firmę.'],real:0,
+ what:'Jobs zredukował ofertę do siatki 2×2: komputer domowy i profesjonalny, stacjonarny i przenośny. Zakończył program klonów. W sierpniu 1997 Microsoft zainwestował w Apple 150 mln dolarów.',
+ then:'W 1998 przyszedł iMac, potem iPod i iPhone. Apple stało się jedną z najcenniejszych firm świata.',
+ lesson:'Kiedy toniesz, mniej znaczy więcej. Cztery rzeczy zrobione dobrze biją czterdzieści zrobionych średnio.'},
+{y:'2000',co:'Blockbuster',where:'Dallas, USA',
+ sit:['Blockbuster ma tysiące wypożyczalni wideo i zarabia też na karach za spóźnione zwroty.','Mała firma Netflix wysyła płyty DVD pocztą i traci pieniądze.','Założyciele Netflixa proponują sprzedaż firmy za 50 mln dolarów.'],
+ q:'Co odpowiadasz Netflixowi?',
+ o:['Kupuję. 50 mln to drobne dla nas.','Dziękuję, nie. To nisza, a my mamy sklepy.','Odmawiam i od razu buduję własny serwis wysyłkowy.'],real:1,
+ what:'Blockbuster odmówił. Własny serwis online uruchomił dopiero kilka lat później.',
+ then:'Netflix przeszedł z płyt na streaming. Blockbuster upadł w 2010 roku. Został jeden sklep w Bend w stanie Oregon, dziś atrakcja turystyczna.',
+ lesson:'Najgroźniejsza konkurencja wygląda na początku jak śmieszna nisza. Busiarz z aplikacją też wygląda tak dla dużej spedycji.'},
+{y:'2004',co:'LEGO',where:'Billund, Dania',
+ sit:['Firma notuje rekordowe straty.','LEGO robi parki rozrywki, gry wideo, ubrania i zegarki. Liczba unikalnych klocków przekroczyła 12 tysięcy.','Nowym prezesem zostaje 35-letni Jørgen Vig Knudstorp.'],
+ q:'Jak ratujesz LEGO?',
+ o:['Rozwijam markę w nowych branżach: więcej licencji, filmy, ubrania.','Wracam do klocków: tnę liczbę elementów prawie o połowę i sprzedaję parki.','Przenoszę produkcję do Azji i obniżam ceny.'],real:1,
+ what:'Knudstorp skupił firmę na klockach, mocno zmniejszył liczbę unikalnych elementów i uprościł produkcję. W 2005 LEGO sprzedało większość udziałów w parkach Legoland.',
+ then:'Dekadę później LEGO wyrosło na największego producenta zabawek na świecie, wyprzedzając Mattela.',
+ lesson:'Złożoność to cichy koszt. Każdy dodatkowy wariant produktu zjada marżę, zanim ktokolwiek to zauważy.'},
+{y:'2005',co:'Marvel',where:'Nowy Jork, USA',
+ sit:['W 1996 Marvel złożył wniosek o upadłość. Wyszedł z niej, licencjonując postacie studiom, na przykład Spider-Mana Sony.','Z licencji Marvel dostaje tylko mały procent zysków z kasowych hitów.','Bank Merrill Lynch oferuje 525 mln dolarów kredytu pod zastaw praw do 10 postaci.'],
+ q:'Co robisz?',
+ o:['Licencjonuję dalej. Pewny przychód, zero ryzyka.','Biorę kredyt i robię filmy sam, choć w razie porażki tracę postacie.','Sprzedaję całą firmę dużemu studiu.'],real:1,
+ what:'Marvel wziął kredyt i założył własne studio filmowe. Postacie, w tym Kapitan Ameryka i Avengers, poszły pod zastaw.',
+ then:'Pierwszy film, „Iron Man”, wszedł w 2008 i był hitem. W 2009 Disney kupił Marvela za około 4 mld dolarów.',
+ lesson:'Kontrola nad własnym produktem bywa warta więcej niż pewny procent od cudzego zysku. Ryzyko trzeba jednak umieć spłacić.'}];
+const L=['A','B','C'];
+let i=0,picks=[],order=[];
+const shuf=()=>{const a=[0,1,2];for(let k=2;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a;};
+function score(){const done=picks.filter(p=>p!=null);$('score').textContent=done.filter((p,k)=>p===CASES[k].real).length+'/'+done.length;}
+function tabs(){$('tabs').innerHTML=CASES.map((c,k)=>{let cls=k===i?'cur':'';if(picks[k]!=null&&k!==i)cls=picks[k]===c.real?'hit':'miss';return `<span class="${cls}">${c.y.replace('lata ','')}</span>`}).join('');}
+function show(){
+ if(i>=CASES.length){final();return;}
+ const c=CASES[i],p=picks[i];if(!order[i])order[i]=shuf();tabs();score();
+ $('sheet').innerHTML=`<div class="meta"><span>Teczka ${i+1}/${CASES.length}</span><span>${c.where} · ${c.y}</span></div>
+ <h2>${c.co}</h2><div class="stampbox" id="stampbox"></div>
+ <div><h3>Sytuacja</h3><ul>${c.sit.map(s=>`<li>${s}</li>`).join('')}</ul></div>
+ <p class="q">${c.q}</p>
+ <div class="opts">${order[i].map((k,pos)=>`<button class="opt" type="button" data-l="${L[pos]}" data-k="${k}">${c.o[k]}<span class="tag"></span></button>`).join('')}</div>
+ <div class="reveal" id="rev" hidden></div>`;
+ $('sheet').querySelectorAll('.opt').forEach(b=>b.onclick=()=>choose(+b.dataset.k));
+ if(p!=null)reveal(false);
+}
+function choose(k){if(picks[i]!=null)return;picks[i]=k;reveal(true);}
+function reveal(anim){
+ const c=CASES[i],k=picks[i],hit=k===c.real;
+ $('sheet').querySelectorAll('.opt').forEach(b=>{const n=+b.dataset.k;b.disabled=true;
+  if(n===c.real){b.classList.add('real');b.querySelector('.tag').textContent='tak zrobiono naprawdę';}
+  if(n===k){b.classList.add('mine');if(!hit)b.querySelector('.tag').textContent='twój wybór';else b.querySelector('.tag').textContent='tak zrobiono naprawdę · twój wybór';}});
+ $('stampbox').innerHTML=`<div class="stamp ${hit?'ok':''}" style="${anim?'':'animation:none'}">${hit?'Jak w historii':'Inaczej'}</div>`;
+ const r=$('rev');r.hidden=false;
+ r.innerHTML=`<div><h3>Co się stało</h3><p>${c.what}</p></div><div><h3>Skutek</h3><p>${c.then}</p></div>
+ <div class="lesson"><b>Lekcja</b>${c.lesson}</div>
+ <button class="btn" id="nx" type="button">${i<CASES.length-1?'Następna teczka →':'Podsumowanie'}</button>`;
+ $('nx').onclick=()=>{i++;show();scrollTo({top:0,behavior:'smooth'});};
+ score();tabs();
+ if(anim)r.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function final(){
+ const hits=picks.filter((p,k)=>p===CASES[k].real).length;tabs();score();
+ const v=hits>=8?'Myślisz jak historia. Uważaj, bo historia nie zawsze myślała dobrze: Kodak i Blockbuster też tu są.':hits>=5?'Połowa zgodna z historią. W drugiej połowie albo uratowałbyś firmę, albo zbankrutował szybciej.':'Robisz po swojemu. Atari i Blockbusterowi pewnie by to pomogło, Apple i LEGO już niekoniecznie.';
+ $('sheet').innerHTML=`<div class="meta"><span>Raport końcowy</span><span>${CASES.length} teczek</span></div>
+ <div class="big">${hits}/${CASES.length}</div><p style="margin:0">${v}</p>
+ <div class="final">${CASES.map((c,k)=>`<div class="row"><b>${c.y.replace('lata ','')}</b><span>${c.co}: ${c.o[c.real].split(/[.:,]/)[0].toLowerCase()}</span><i style="color:${picks[k]===c.real?'var(--ok)':'var(--stamp)'}">${picks[k]===c.real?'✓':'✗'}</i></div>`).join('')}</div>
+ <button class="btn" id="again" type="button">Od nowa</button>`;
+ $('again').onclick=()=>{i=0;picks=[];order=[];show();};
+}
+show();
+})();
+</script>
