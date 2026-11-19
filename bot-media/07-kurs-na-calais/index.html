@@ -1,0 +1,227 @@
+<title>Kurs na Calais</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Patrick+Hand&display=swap">
+<style>
+/* layout: vertical webtoon strip — title splash, nine full-width panels with lettered balloons, colophon */
+:root{
+  --paper:#f6f1e4; --ink:#1b1a17; --cap:#ffe27a; --bubble:#ffffff; --dim:#6d675a;
+  --title:"Bangers", Impact, sans-serif;
+  --letter:"Patrick Hand", "Comic Sans MS", "Segoe Print", sans-serif;
+  color-scheme:light;
+}
+html,body{background:var(--paper);color:var(--ink)}
+[hidden]{display:none!important}
+body{font-family:var(--letter);font-size:18px;line-height:1.25;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.strip{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.splash{border:3px solid var(--ink);background:var(--ink);color:var(--paper);padding:18px 16px 14px;position:relative;overflow:hidden}
+.splash h1{font-family:var(--title);font-weight:400;font-size:clamp(46px,14vw,78px);line-height:.9;margin:0;letter-spacing:1px;color:var(--cap);text-shadow:4px 4px 0 #c1440e}
+.splash p{margin:8px 0 0;font-size:19px}
+.splash small{display:block;margin-top:10px;font-size:15px;opacity:.75}
+.panel{position:relative;border:3px solid var(--ink);background:#fff;overflow:hidden}
+.panel svg{display:block;width:100%;height:auto}
+.cap{position:absolute;background:var(--cap);border:2px solid var(--ink);padding:4px 8px;font-size:clamp(14px,3.8vw,18px);line-height:1.15;max-width:62%}
+.b{position:absolute;background:var(--bubble);border:2px solid var(--ink);border-radius:18px;padding:5px 10px;font-size:clamp(14px,3.9vw,19px);line-height:1.15;max-width:52%;text-align:center}
+.b::after{content:"";position:absolute;width:14px;height:14px;background:var(--bubble);border-right:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.b.bl::after{left:18px;bottom:-9px;transform:rotate(45deg) skew(10deg,10deg)}
+.b.br::after{right:18px;bottom:-9px;transform:rotate(45deg) skew(10deg,10deg)}
+.b.tl::after{left:18px;top:-9px;transform:rotate(225deg) skew(10deg,10deg)}
+.b.tr::after{right:18px;top:-9px;transform:rotate(225deg) skew(10deg,10deg)}
+.b.phone{border-style:dashed;border-radius:6px}
+.b.phone::after{display:none}
+.b.machine{background:#152a19;color:#7dff8e;border-color:#152a19;font-family:"Courier New",monospace;font-weight:700;border-radius:4px}
+.b.machine::after{display:none}
+.sfx{position:absolute;font-family:var(--title);color:#c1440e;font-size:clamp(28px,8vw,44px);-webkit-text-stroke:1.5px var(--ink);transform:rotate(-8deg);letter-spacing:1px}
+.end{text-align:center;font-family:var(--title);font-size:34px;letter-spacing:2px;margin-top:6px}
+.colo{font-size:15px;color:var(--dim);text-align:center;margin:0}
+</style>
+
+<div class="strip">
+  <header class="splash">
+    <h1>Kurs na Calais</h1>
+    <p>Jedna paleta. Pilne. Opole – Calais, około 1250 km i jeden automat z kawą.</p>
+    <small>Komiks w dziewięciu kadrach · postacie fikcyjne, automat niestety prawdziwy</small>
+  </header>
+
+  <!-- 1 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 260" aria-label="Sypialnia, świt, dzwoni telefon">
+      <rect width="400" height="260" fill="#232845"/>
+      <rect x="250" y="30" width="110" height="90" fill="#3b4a7a"/><line x1="305" y1="30" x2="305" y2="120" stroke="#232845" stroke-width="5"/><line x1="250" y1="75" x2="360" y2="75" stroke="#232845" stroke-width="5"/>
+      <circle cx="335" cy="52" r="10" fill="#e8e2c4" opacity=".8"/>
+      <rect x="0" y="170" width="300" height="90" fill="#4a3f63"/><rect x="0" y="150" width="300" height="34" rx="14" fill="#6b5f8c"/>
+      <ellipse cx="90" cy="150" rx="46" ry="20" fill="#e9e4f2"/>
+      <circle cx="120" cy="140" r="17" fill="#e8b48c"/><path d="M104 132 q16 -16 32 0 q-16 -6 -32 0z" fill="#3a2a1d"/>
+      <path d="M112 141 l6 0" stroke="#1b1a17" stroke-width="2"/>
+      <rect x="315" y="170" width="70" height="90" fill="#3a3152"/>
+      <rect x="333" y="156" width="36" height="16" rx="3" fill="#0f0f12"/><rect x="336" y="158" width="30" height="12" rx="2" fill="#9be7ff"/>
+      <g fill="#ffe27a"><path d="M330 150 l-8 -10"/><rect x="322" y="138" width="3" height="10" transform="rotate(-35 322 138)"/><rect x="375" y="138" width="3" height="10" transform="rotate(35 375 138)"/></g>
+      <text x="300" y="215" font-family="Courier New, monospace" font-size="22" fill="#ff5a4a" font-weight="700">05:58</text>
+    </svg>
+    <div class="sfx" style="right:3%;top:44%">BZZZ</div>
+    <div class="b phone" style="right:3%;top:4%">„Masz kurs. Pilny.”</div>
+    <div class="b bl" style="left:4%;top:12%">Wszystkie są pilne.</div>
+    <div class="b phone" style="left:30%;top:36%;max-width:40%">„Ten jest pilny inaczej.”</div>
+  </div>
+
+  <!-- 2 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 260" aria-label="Autostrada A4 o wschodzie słońca">
+      <defs><linearGradient id="dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb36b"/><stop offset=".6" stop-color="#ffe0a8"/></linearGradient></defs>
+      <rect width="400" height="260" fill="url(#dawn)"/>
+      <circle cx="300" cy="150" r="40" fill="#fff3c4"/>
+      <path d="M0 160 q100 -40 200 -10 t200 -5 v115 h-400z" fill="#8fb36a"/>
+      <path d="M0 260 L170 150 L230 150 L400 260z" fill="#55555c"/>
+      <path d="M200 152 L200 160 M199 175 L198 190 M196 210 L193 235" stroke="#fff" stroke-width="4"/>
+      <g transform="translate(118 170)">
+        <rect x="0" y="0" width="150" height="58" rx="10" fill="#f2f2f2" stroke="#1b1a17" stroke-width="3"/>
+        <path d="M110 4 h26 q12 2 12 20 v12 h-38z" fill="#9cc9e6" stroke="#1b1a17" stroke-width="3"/>
+        <rect x="0" y="36" width="150" height="6" fill="#c1440e"/>
+        <circle cx="32" cy="60" r="13" fill="#1b1a17"/><circle cx="32" cy="60" r="5" fill="#bbb"/>
+        <circle cx="120" cy="60" r="13" fill="#1b1a17"/><circle cx="120" cy="60" r="5" fill="#bbb"/>
+      </g>
+      <g transform="translate(36 40)">
+        <rect x="0" y="0" width="118" height="62" fill="#1a55b8" stroke="#fff" stroke-width="3"/>
+        <rect x="8" y="8" width="34" height="20" fill="#c1440e"/><text x="25" y="23" text-anchor="middle" font-family="Arial" font-weight="700" font-size="14" fill="#fff">A4</text>
+        <text x="50" y="24" font-family="Arial" font-weight="700" font-size="13" fill="#fff">Dresden</text>
+        <text x="50" y="48" font-family="Arial" font-weight="700" font-size="13" fill="#fff">156 km</text>
+      </g>
+    </svg>
+    <div class="cap" style="right:2%;top:3%;max-width:46%">Ładunek: jedna paleta. Zawartość według papierów: „części”.</div>
+    <div class="b br" style="right:6%;top:42%">Zawsze są części.</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 200" aria-label="Granica w Görlitz, nic się nie dzieje">
+      <rect width="400" height="200" fill="#cfe3f2"/>
+      <rect y="130" width="400" height="70" fill="#5f5f66"/>
+      <g transform="translate(150 30)"><rect width="100" height="70" fill="#1a55b8" stroke="#fff" stroke-width="3"/>
+        <g fill="#ffd400"><circle cx="50" cy="16" r="3"/><circle cx="62" cy="19" r="3"/><circle cx="70" cy="28" r="3"/><circle cx="72" cy="40" r="3"/><circle cx="66" cy="50" r="3"/><circle cx="56" cy="56" r="3"/><circle cx="44" cy="56" r="3"/><circle cx="34" cy="50" r="3"/><circle cx="28" cy="40" r="3"/><circle cx="30" cy="28" r="3"/><circle cx="38" cy="19" r="3"/></g>
+        <text x="50" y="40" text-anchor="middle" font-family="Arial" font-weight="700" font-size="13" fill="#fff">D</text></g>
+      <rect x="196" y="100" width="8" height="30" fill="#777"/>
+      <g transform="translate(300 128)"><rect width="70" height="28" rx="6" fill="#f2f2f2" stroke="#1b1a17" stroke-width="2"/><circle cx="16" cy="30" r="7" fill="#1b1a17"/><circle cx="56" cy="30" r="7" fill="#1b1a17"/></g>
+      <path d="M260 140 h30 M250 150 h40" stroke="#1b1a17" stroke-width="2"/>
+    </svg>
+    <div class="cap" style="left:2%;top:4%">Görlitz. Granica w strefie Schengen.</div>
+    <div class="cap" style="left:2%;bottom:6%">Najkrótsza scena w historii granic.</div>
+  </div>
+
+  <!-- 4 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 280" aria-label="Automat z kawą na MOP-ie pod Erfurtem">
+      <rect width="400" height="280" fill="#d9d4c7"/><rect y="230" width="400" height="50" fill="#a59d8a"/>
+      <g transform="translate(40 30)"><rect width="140" height="210" rx="6" fill="#7a1f1f" stroke="#1b1a17" stroke-width="3"/>
+        <rect x="16" y="18" width="108" height="40" fill="#152a19"/><rect x="30" y="80" width="80" height="70" rx="4" fill="#3b0e0e"/>
+        <g fill="#e9e1cf"><rect x="20" y="164" width="22" height="12" rx="2"/><rect x="50" y="164" width="22" height="12" rx="2"/><rect x="80" y="164" width="22" height="12" rx="2"/></g>
+        <text x="70" y="200" text-anchor="middle" font-family="Arial" font-size="11" fill="#e9e1cf">KAFFEE · 1,80 €</text></g>
+      <g transform="translate(250 104)">
+        <rect x="-10" y="80" width="110" height="140" rx="30" fill="#3d4f6a"/>
+        <circle cx="45" cy="48" r="38" fill="#e8b48c"/>
+        <path d="M5 40 q40 -45 80 0 q-40 -12 -80 0z" fill="#c1440e"/><rect x="60" y="34" width="40" height="8" rx="4" fill="#c1440e"/>
+        <circle cx="32" cy="50" r="3.5" fill="#1b1a17"/><circle cx="58" cy="50" r="3.5" fill="#1b1a17"/>
+        <path d="M30 70 h30" stroke="#1b1a17" stroke-width="3"/>
+        <g fill="#8a6a50" opacity=".6"><circle cx="28" cy="78" r="1.4"/><circle cx="36" cy="80" r="1.4"/><circle cx="46" cy="81" r="1.4"/><circle cx="56" cy="80" r="1.4"/><circle cx="62" cy="77" r="1.4"/></g>
+      </g>
+    </svg>
+    <div class="b br" style="right:4%;top:3%">Cappuccino.</div>
+    <div class="b machine" style="left:12%;top:12%">BRAK MLEKA</div>
+    <div class="b br" style="right:4%;top:17%">Espresso.</div>
+    <div class="b machine" style="left:12%;top:27%">BRAK KUBKÓW</div>
+    <div class="cap" style="left:2%;bottom:3%;max-width:46%">MOP pod Erfurtem, 11:40. Kierowca patrzy prosto w kamerę.</div>
+  </div>
+
+  <!-- 5 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 240" aria-label="Kabina busa, dzwoni klient">
+      <rect width="400" height="240" fill="#9ccbe8"/>
+      <path d="M0 150 q200 -30 400 0 v90 h-400z" fill="#7fae63"/><path d="M130 240 L195 130 L215 130 L300 240z" fill="#5f5f66"/>
+      <g transform="translate(250 40)"><rect width="110" height="52" fill="#1a55b8" stroke="#fff" stroke-width="3"/><text x="55" y="22" text-anchor="middle" font-family="Arial" font-weight="700" font-size="14" fill="#fff">Calais</text><text x="55" y="42" text-anchor="middle" font-family="Arial" font-weight="700" font-size="14" fill="#fff">812 km</text></g>
+      <path d="M0 0 h400 v30 q-200 -20 -400 0z" fill="#2a2a2e"/>
+      <path d="M0 175 q200 -30 400 0 v65 h-400z" fill="#2a2a2e"/>
+      <circle cx="110" cy="215" r="62" fill="none" stroke="#141416" stroke-width="14"/>
+      <g transform="translate(270 150)"><rect width="56" height="90" rx="8" fill="#0f0f12"/><rect x="5" y="8" width="46" height="72" rx="4" fill="#33c27a"/>
+        <text x="28" y="40" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#fff">KLIENT</text><circle cx="28" cy="62" r="8" fill="#fff"/></g>
+    </svg>
+    <div class="b phone" style="right:22%;top:6%">„Panie, jest pan już?”</div>
+    <div class="b tl" style="left:4%;top:40%">Prawie.</div>
+  </div>
+
+  <!-- 6 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 220" aria-label="Belgia, dziura w drodze">
+      <rect width="400" height="220" fill="#b9c3cc"/>
+      <g fill="#9aa5b0"><path d="M0 60 q40 -20 80 0 q40 -20 80 0 v10 h-160z"/><path d="M220 40 q40 -20 80 0 q40 -20 80 0 v10 h-160z"/></g>
+      <rect y="150" width="400" height="70" fill="#5f5f66"/>
+      <ellipse cx="200" cy="170" rx="34" ry="8" fill="#2c2c30"/>
+      <g transform="translate(140 72) rotate(-9)"><rect width="140" height="54" rx="10" fill="#f2f2f2" stroke="#1b1a17" stroke-width="3"/><path d="M104 4 h24 q10 2 10 18 v10 h-34z" fill="#9cc9e6" stroke="#1b1a17" stroke-width="3"/><rect y="34" width="140" height="6" fill="#c1440e"/>
+        <circle cx="30" cy="58" r="12" fill="#1b1a17"/><circle cx="112" cy="58" r="12" fill="#1b1a17"/></g>
+      <path d="M120 150 l-14 8 M118 140 l-18 2 M290 150 l14 8 M292 140 l18 2" stroke="#1b1a17" stroke-width="3"/>
+      <g transform="translate(20 70)"><rect width="88" height="50" fill="#1a55b8" stroke="#fff" stroke-width="3"/><text x="44" y="22" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#fff">BELGIQUE</text><text x="44" y="38" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#fff">BELGIË</text></g>
+    </svg>
+    <div class="sfx" style="left:44%;top:62%">ŁUP!</div>
+    <div class="cap" style="right:2%;top:4%">Belgia. Drogi testowane przez czas. Czas wygrał.</div>
+  </div>
+
+  <!-- 7 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 260" aria-label="Magazyn w Calais, rampa zamknięta">
+      <rect width="400" height="260" fill="#c9cfd6"/><rect y="200" width="400" height="60" fill="#8d8f94"/>
+      <rect x="20" y="40" width="250" height="160" fill="#e3e6ea" stroke="#1b1a17" stroke-width="3"/>
+      <rect x="50" y="90" width="120" height="110" fill="#9aa1aa" stroke="#1b1a17" stroke-width="3"/>
+      <g stroke="#7d848d" stroke-width="3"><line x1="50" y1="110" x2="170" y2="110"/><line x1="50" y1="130" x2="170" y2="130"/><line x1="50" y1="150" x2="170" y2="150"/><line x1="50" y1="170" x2="170" y2="170"/></g>
+      <rect x="185" y="70" width="70" height="40" fill="#fff" stroke="#1b1a17" stroke-width="2"/>
+      <text x="220" y="86" text-anchor="middle" font-family="Arial" font-size="10" font-weight="700" fill="#1b1a17">LIVRAISONS</text><text x="220" y="101" text-anchor="middle" font-family="Arial" font-size="10" fill="#1b1a17">8h – 17h</text>
+      <circle cx="220" cy="150" r="22" fill="#fff" stroke="#1b1a17" stroke-width="3"/><line x1="220" y1="150" x2="220" y2="133" stroke="#1b1a17" stroke-width="3"/><line x1="220" y1="150" x2="208" y2="143" stroke="#1b1a17" stroke-width="3"/>
+      <g transform="translate(300 90)">
+        <rect x="-4" y="44" width="70" height="80" rx="20" fill="#ffd400"/><rect x="-4" y="70" width="70" height="8" fill="#e9e9e9"/><rect x="-4" y="92" width="70" height="8" fill="#e9e9e9"/>
+        <circle cx="31" cy="24" r="24" fill="#d39a74"/><path d="M15 30 h30" stroke="#1b1a17" stroke-width="2.5"/><circle cx="22" cy="20" r="2.5" fill="#1b1a17"/><circle cx="40" cy="20" r="2.5" fill="#1b1a17"/><path d="M16 12 l10 3 M46 12 l-10 3" stroke="#1b1a17" stroke-width="2.5"/>
+        <rect x="-4" y="60" width="70" height="16" rx="8" fill="#d39a74"/>
+        <rect x="6" y="124" width="20" height="40" fill="#2f3e57"/><rect x="36" y="124" width="20" height="40" fill="#2f3e57"/>
+      </g>
+    </svg>
+    <div class="b tr" style="right:2%;top:5%;max-width:44%">Rampa zamknięta. Demain, 8 heures.</div>
+    <div class="cap" style="left:2%;top:3%">Calais, 16:59.</div>
+    <div class="cap" style="left:2%;bottom:4%;max-width:55%">Na zegarze minuta do zamknięcia. Według magazyniera już po.</div>
+  </div>
+
+  <!-- 8 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 240" aria-label="Noc na parkingu, światło w kabinie">
+      <rect width="400" height="240" fill="#141a33"/><circle cx="330" cy="50" r="22" fill="#f4efd2"/><circle cx="340" cy="44" r="20" fill="#141a33"/>
+      <g fill="#f4efd2" opacity=".7"><circle cx="40" cy="30" r="1.5"/><circle cx="120" cy="60" r="1.2"/><circle cx="200" cy="25" r="1.5"/><circle cx="260" cy="80" r="1.2"/><circle cx="380" cy="110" r="1.2"/></g>
+      <rect y="180" width="400" height="60" fill="#2b2d38"/>
+      <g stroke="#e8e2c4" stroke-width="2" opacity=".5"><line x1="60" y1="190" x2="60" y2="240"/><line x1="200" y1="190" x2="200" y2="240"/><line x1="340" y1="190" x2="340" y2="240"/></g>
+      <rect x="20" y="70" width="6" height="110" fill="#555"/><path d="M23 70 h26" stroke="#555" stroke-width="5"/><circle cx="50" cy="74" r="7" fill="#ffae5c"/>
+      <path d="M50 80 L20 180 L90 180z" fill="#ffae5c" opacity=".13"/>
+      <g transform="translate(110 112)"><rect width="170" height="64" rx="10" fill="#d8d8de" stroke="#0b0b10" stroke-width="3"/><path d="M126 4 h30 q12 2 12 22 v12 h-42z" fill="#ffd27a" stroke="#0b0b10" stroke-width="3"/><rect y="40" width="170" height="6" fill="#a23a14"/>
+        <circle cx="36" cy="66" r="14" fill="#0b0b10"/><circle cx="136" cy="66" r="14" fill="#0b0b10"/></g>
+    </svg>
+    <div class="b phone" style="left:4%;top:5%;max-width:46%">„Masz powrót? Jest doładunek z Lyonu.”</div>
+    <div class="b br" style="right:16%;top:24%">Lyon to nie jest po drodze.</div>
+    <div class="b phone" style="left:8%;top:44%">„Teraz jest.”</div>
+  </div>
+
+  <!-- 9 -->
+  <div class="panel">
+    <svg viewBox="0 0 400 300" aria-label="Tapeta telefonu: dziecięcy rysunek żółtego busa">
+      <rect width="400" height="300" fill="#0d0f1c"/>
+      <g transform="translate(110 14)"><rect width="180" height="272" rx="24" fill="#111" stroke="#2c2c2c" stroke-width="4"/>
+        <rect x="10" y="16" width="160" height="240" rx="12" fill="#fffdf6"/>
+        <path d="M20 40 q20 -10 40 0" stroke="#3d8bff" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="140" cy="50" r="16" fill="none" stroke="#ff9f1c" stroke-width="5"/><g stroke="#ff9f1c" stroke-width="4" stroke-linecap="round"><line x1="140" y1="22" x2="140" y2="28"/><line x1="166" y1="50" x2="160" y2="50"/><line x1="118" y1="30" x2="123" y2="35"/><line x1="160" y1="70" x2="155" y2="65"/></g>
+        <path d="M24 160 q2 -34 12 -40 l98 -4 q14 2 16 30 l2 18 q-60 6 -128 -4z" fill="#ffd23a" stroke="#e0a400" stroke-width="4" stroke-linejoin="round"/>
+        <g fill="#8fd3ff" stroke="#3d8bff" stroke-width="2"><rect x="38" y="126" width="22" height="18" rx="3"/><rect x="68" y="126" width="22" height="18" rx="3"/><rect x="100" y="124" width="28" height="22" rx="3"/></g>
+        <circle cx="52" cy="168" r="13" fill="none" stroke="#1b1a17" stroke-width="5"/><circle cx="124" cy="168" r="13" fill="none" stroke="#1b1a17" stroke-width="5"/>
+        <path d="M10 196 q80 -8 160 0" stroke="#3cc76a" stroke-width="6" fill="none"/>
+        <text x="90" y="236" text-anchor="middle" font-family="Patrick Hand, Comic Sans MS, sans-serif" font-size="30" fill="#ff4d4d" transform="rotate(-4 90 236)">TATA</text>
+      </g>
+    </svg>
+    <div class="cap" style="left:2%;top:4%;max-width:30%">Tapeta. Autor: lat 4.</div>
+    <div class="cap" style="right:2%;bottom:5%;max-width:30%">Lyon jest po drodze. Do domu też.</div>
+  </div>
+
+  <div class="end">KONIEC</div>
+  <p class="colo">Albo początek. W tej branży nie ma różnicy.</p>
+</div>
