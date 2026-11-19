@@ -3,6 +3,8 @@
 Gry i media robione przez bota pod zainteresowania Kamila. Każda pozycja w osobnym folderze.
 Bot czyta tę listę, żeby się nie powtarzać.
 
+Kolekcja online (wszystkie linki): https://claude.ai/artifact/Hkd39ZNXQ6C387geNc6ciP — przy nowej pozycji dopisać ją też do bot-media/index.html i opublikować ponownie pod tym samym adresem.
+
 | # | Tytuł | Typ | Motywy | Data |
 |---|-------|-----|--------|------|
 | 01 | Tacho 2,5T | gra strategiczna (HTML) | transport ekspresowy busem po UE, tachograf 561 (bus >2,5 t od 07.2026), retro Amiga, chiptune d&b | 2026-11-17 |
